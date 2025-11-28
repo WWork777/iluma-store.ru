@@ -9,7 +9,7 @@ services:
       - NODE_ENV=production
       - VIRTUAL_HOST=iluma-store.ru
       - LETSENCRYPT_HOST=iluma-store.ru
-      - LETSENCRYPT_EMAIL=qwe@example.com
+      - LETSENCRYPT_EMAIL=parsh@gmail.com
     networks:
       - web
     volumes:
