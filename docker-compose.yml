@@ -3,15 +3,20 @@ version: "3"
 services:
   app:
     build: .
-    container_name: iluma-store.ru
+    container_name: iluma-store-app
     restart: always
     environment:
       - NODE_ENV=production
       - VIRTUAL_HOST=iluma-store.ru
       - LETSENCRYPT_HOST=iluma-store.ru
-      - LETSENCRYPT_EMAIL=qwe@email.com
+      - LETSENCRYPT_EMAIL=youremail@example.com
     networks:
       - web
+    volumes:
+      # Монтируем папку с картинками в контейнер
+      - /var/www/iluma-store.ru/images:/app/public/images:ro
+      # Монтируем папку с билдом Next.js (опционально для кэширования)
+      - /var/www/iluma-store.ru/.next:/app/.next
 
 networks:
   web:
