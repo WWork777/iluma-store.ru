@@ -903,7 +903,12 @@ ${formattedCart}
 
             {selectedMethod === "pickup" && (
               <div className="checkout-delivery-pickup">
-                <p>Самовывоз по тех. причинам временно недоступен</p>
+                <p>
+                  Забирать заказ по адресу:
+                  <br />
+                  г.Москва - ул. Римского-Корсакова, 11, корп 8 Ориентир: Пункт
+                  "OZON" (САМОВЫВОЗ ОСУЩЕСТВЛЯЕТСЯ ПО СОГЛАСОВАНИЮ)
+                </p>
               </div>
             )}
           </div>
@@ -972,10 +977,7 @@ ${formattedCart}
                 </p>
               )}
             </div>
-            <button
-              onClick={handleExternalSubmit}
-              disabled={loading || selectedMethod === "pickup"}
-            >
+            <button onClick={handleExternalSubmit} disabled={loading}>
               {loading ? "Загрузка..." : "Заказать"}
             </button>
           </div>
