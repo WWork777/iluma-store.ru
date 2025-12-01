@@ -1,3 +1,4 @@
+
 .modalOverlay {
   position: fixed;
   top: 0;
@@ -13,22 +14,49 @@
 
 .modalContent {
   position: relative;
+  
   background-color: white;
   padding: 2rem;
   border-radius: 8px;
-  max-width: 500px;
+  max-width: 800px;
   width: 90%;
   text-align: center;
-  
-  h2 {
-    color: #ff0000;
-    margin-bottom: 1rem;
+
+  a{
+
+    display: flex;
+    flex-direction: row;
+    gap: 30px;
+
+    .leftHalf{
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+
+      h2 {
+        // color: #ff0000;
+        margin-bottom: 1rem;
+      }
+      
+      p {
+        color: #333;
+        font-size: 1.1rem;
+      }
+    }
+    .rightHalf{
+      max-width: 35%;
+
+      img{
+        min-width: 120px;
+        max-width: min(300px, 100%);
+        height: auto;
+      }
+    }
   }
   
-  p {
-    color: #333;
-    font-size: 1.1rem;
-  }
+  
+  
 }
 
 .closeButton {
@@ -45,5 +73,15 @@
   
   &:hover {
     color: #000;
+  }
+}
+
+@media (max-width: 700px) {
+  .modalContent a{
+    flex-direction: column;
+
+    .rightHalf{
+      max-width: 100%;
+    }
   }
 }

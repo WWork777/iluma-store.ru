@@ -7,7 +7,6 @@ import Footer from "../../components/Footer/Footer";
 import Cart from "../../components/Cart/cart";
 import CartButton from "../../components/CartButton/CartButton";
 // import BlockModal from "../../components/BlockModal/BlockModal";
-import PromotionModal from "../../components/PromotionModal/PromotionModal";
 import YandexMetrika from "../../components/YandexMetrika/YandexMEtrika";
 
 const montserrat = localFont({
@@ -46,7 +45,7 @@ export default function RootLayout({ children }) {
           <Cart />
           <CartButton />
           {/* <BlockModal allowClose={true}/> */}
-          {/* <PromotionModal allowClose={true}/> */}
+          
         </CartProvider>
       </body>
     </html>
