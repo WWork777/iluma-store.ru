@@ -6,7 +6,7 @@ import Preview from "../../../components/Home/Preview/Preview";
 import Exclusive from "../../../components/Home/Exclusive/Exclusive";
 
 export const metadata = {
-  title: "Купить IQOS ILUMA и стики Terea с доставкой по России!!!!!!!!!!!",
+  title: "Купить IQOS ILUMA и стики Terea с доставкой по России",
   description:
     "Каталог устройств IQOS ILUMA и стиков Terea. Только оригинальная продукция. Быстрая доставка. Iluma-store.",
   alternates: {
