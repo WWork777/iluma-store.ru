@@ -68,7 +68,7 @@ export default function Hero() {
                     />
                   </svg>
                 </Link>
-                <Link href="https://t.me/+tXZ1x8yraKUzNWEy">
+                <Link href="https://t.me/Ilumastore2025">
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
                     x="0px"
