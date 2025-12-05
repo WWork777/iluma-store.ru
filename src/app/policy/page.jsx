@@ -1,4 +1,4 @@
-import styles from "./styles.module.scss";
+import styles from './styles.module.scss';
 
 export default function Policy() {
   return (
@@ -10,8 +10,8 @@ export default function Policy() {
         </div>
       </div>
 
-      <div class="container">
-        <p class="last-update">Последнее обновление: 10 ноября 2023 г.</p>
+      <div className='container'>
+        <p class='last-update'>Последнее обновление: 10 ноября 2023 г.</p>
 
         <h2>1. Общие положения</h2>
         <p>
@@ -28,7 +28,7 @@ export default function Policy() {
           условиями настоящей Политики.
         </p>
 
-        <div class="highlight">
+        <div class='highlight'>
           <p>
             Обратите внимание: вся информация и продукты на данном сайте
             предназначены исключительно для лиц старше 18 лет. Подтверждая свое
