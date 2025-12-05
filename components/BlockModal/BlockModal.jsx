@@ -4,8 +4,19 @@ import './BlockModal.scss';
 
 const BlockModal = ({ allowClose = false }) => {
   const [isVisible, setIsVisible] = useState(true);
+  const [currentDate, setCurrentDate] = useState('');
 
   useEffect(() => {
+    // Форматирование текущей даты
+    const now = new Date();
+    const formattedDate = now.toLocaleDateString('ru-RU', {
+      day: 'numeric',
+      month: 'long',
+      year: 'numeric',
+    });
+    setCurrentDate(formattedDate);
+
+    // Блокировка скролла
     document.body.style.overflow = isVisible ? 'hidden' : 'auto';
     return () => {
       document.body.style.overflow = 'auto';
@@ -28,7 +39,7 @@ const BlockModal = ({ allowClose = false }) => {
         )}
         {/* <h2>Сайт временно не работает</h2> */}
         {/* <p>
-          Сегодня 23.08 наш магазин по техническим причинам не работает.
+          Сегодня <strong>{currentDate}</strong> наш магазин по техническим причинам не работает.
           Принимаем заказы на завтра и желаем всем отличного дня!{' '}
         </p> */}
         <h2>Сайт возобновляет свою работу!</h2>
