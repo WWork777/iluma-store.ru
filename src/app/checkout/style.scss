@@ -1,4 +1,4 @@
-@import "/public/const.scss";
+@import '/public/const.scss';
 
 @keyframes spin {
   0% {
@@ -70,6 +70,10 @@
             border-radius: 10px;
             color: $font;
             transition: background-color 0.3s ease;
+            &:disabled {
+              opacity: 0.5;
+              cursor: not-allowed;
+            }
           }
           button.active {
             background-color: $font;
@@ -157,6 +161,11 @@
       padding: 15px 10px;
       border: none;
       cursor: pointer;
+      &:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+        background-color: #ccc;
+      }
     }
     .spinner {
       border: 4px solid #bbbaba;
@@ -168,6 +177,23 @@
       text-align: center;
       margin-left: 48%;
       margin-top: 48%;
+    }
+    .checkout-privacy {
+      input[type='checkbox'] {
+        width: 14px !important;
+        height: 14px !important;
+        cursor: pointer;
+        accent-color: #4caf50; // Зеленый цвет для чекбокса
+        // Для браузеров, которые не поддерживают accent-color
+        &::before {
+          background-color: #4caf50;
+        }
+      }
+      // Кастомный стиль для лучшей видимости
+      input[type='checkbox']:checked {
+        background-color: #4caf50;
+        border-color: #4caf50;
+      }
     }
   }
 }
