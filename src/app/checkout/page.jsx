@@ -894,6 +894,9 @@ ${formattedCart}
                   placeholder="Город"
                   value={formData.city}
                   onChange={handleInputChange}
+                  disabled={
+                    onlyPacksAndBlocks && totalQuantity < 10 && !hasBlock
+                  }
                 />
                 {errors.city && (
                   <p className="error" style={{ color: "red" }}>
@@ -907,6 +910,9 @@ ${formattedCart}
                   placeholder="Номер дома и название улицы"
                   value={formData.streetAddress}
                   onChange={handleInputChange}
+                  disabled={
+                    onlyPacksAndBlocks && totalQuantity < 10 && !hasBlock
+                  }
                 />
                 {errors.streetAddress && (
                   <p className="error" style={{ color: "red" }}>
