@@ -62,7 +62,7 @@ const CheckoutPage = () => {
     // Валидация Telegram (необязательное поле, но если заполнено - проверяем формат)
     if (
       formData.telegram.trim() &&
-      !/^[@a-zA-Z0-9_]{5,32}$/.test(formData.telegram.replace(/^@/, ""))
+      !/^@?[a-zA-Z0-9_]{5,32}$/.test(formData.telegram.trim())
     ) {
       newErrors.telegram = "Некорректный формат Telegram username";
     }
@@ -93,14 +93,13 @@ const CheckoutPage = () => {
 
     if (name === "lastName") {
       isValid = /^[a-zA-Zа-яА-ЯёЁ0-9\s-]*$/.test(value);
-    }
-    else if (name === "city") {
+    } else if (name === "city") {
       isValid = /^[а-яА-ЯёЁ0-9\s-]*$/.test(value);
     } else if (name === "streetAddress") {
       isValid = /^[а-яА-ЯёЁ0-9\s-]*$/.test(value);
     } else if (name === "telegram") {
       // Разрешаем латиницу, цифры, нижние подчеркивания и символ @ в начале
-      isValid = /^[@a-zA-Z0-9_]*$/.test(value);
+      isValid = /^@?[a-zA-Z0-9_]*$/.test(value);
     }
 
     if (isValid) {
@@ -728,7 +727,7 @@ ${formattedCart}
           body: JSON.stringify({
             chat_id: "-1002155675591",
             text: message,
-            parse_mode: "Markdown",
+            parse_mode: "HTML",
           }),
         });
 
@@ -802,7 +801,9 @@ ${formattedCart}
       <div className="checkout-form">
         <div className="plitka">
           <h1>Оформление заказа</h1>
-          <h5>ВАЖНО! Укажите Ваш номер в WhatsApp или Telegram ник для связи</h5>
+          <h5>
+            ВАЖНО! Укажите Ваш номер в WhatsApp или Telegram ник для связи
+          </h5>
         </div>
         <form onSubmit={handleSubmit} ref={formRef}>
           <div className="checkout-name">
@@ -980,7 +981,7 @@ ${formattedCart}
                 }}
               >
                 <input
-                className="privacy-input"
+                  className="privacy-input"
                   type="checkbox"
                   checked={formData.privacyConsent}
                   onChange={handleConsentChange}
