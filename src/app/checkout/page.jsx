@@ -692,25 +692,6 @@ const CheckoutPage = () => {
           : `@${formData.telegram}`
         : "не указан";
 
-      const message = `
-Заказ с сайта ${site}
-
-Имя: ${formData.lastName}   
-Телефон: +${formData.phoneNumber}
-Telegram: ${telegramUsername}
-Способ доставки: ${selectedMethod === "delivery" ? "Доставка" : "Самовывоз"}
-${
-  selectedMethod === "delivery"
-    ? `Город: ${formData.city}\nАдрес: ${formData.streetAddress}`
-    : ""
-}
-
-Корзина:
-${formattedCart}
-
-Общая сумма: ${totalPrice} ₽
-    `;
-
       let mess = "";
       if (selectedMethod === "pickup") {
         mess = `Добрый день!\n\n Получили ваш заказ ✅ \n\n  с сайта ${site} ✅\n\nНаш адрес для самовывоза:\nГ.Москва\n\n Римского-Корсакова 11к8\nОриентир пункт «OZON»\n\nОплата наличными ❗️❗️\n\n Важно❗️❗️\nНеобходимо заранее согласовать дату и приблизительное время приезда.\Т При желании, можем отправить ваш заказ Яндекс курьером или Доставистой. В таком случае, оплатить заказ необходимо переводом на карту. \n\nКорзина:\n${formattedCart} \n\nИмя: ${formData.lastName}\nТелефон: +${formData.phoneNumber}\nTelegram: ${telegramUsername}`;
@@ -726,24 +707,75 @@ ${formattedCart}
       }
 
       try {
+        let isFirstOrder = true;
+        let previousOrdersCount = 0;
+        const phoneNorm = formData.phoneNumber.replace(/\D/g, "");
+        const phoneE164 = `+${phoneNorm}`;
+        try {
+          const checkResponse = await fetch(
+            `/api/check-orders?phone=${encodeURIComponent(phoneE164)}`,
+            { cache: "no-store" },
+          );
+
+          const checkData = await checkResponse.json();
+          console.log("check-orders:", checkData);
+
+          previousOrdersCount = Number(checkData.previous_orders_count ?? 0);
+          isFirstOrder = previousOrdersCount === 0;
+        } catch (e) {
+          console.log("Could not check previous orders:", e);
+        }
+
         // Подготавливаем данные для сохранения в базу
         const orderData = {
           customer_name: formData.lastName,
-          phone_number: `+${formData.phoneNumber}`,
+          phone_number: phoneE164,
           is_delivery: selectedMethod === "delivery",
           city: formData.city || "Москва",
+          total_amount: totalPrice,
           address: formData.streetAddress || "Самовывоз",
           ordered_items: cartItems.map((item) => ({
             product_name: `${item.name} (${item.type || "обычный"})`,
             quantity: item.quantity,
             price_at_time_of_order: item.price,
           })),
+          is_first_order: isFirstOrder ? 1 : 0,
         };
 
         // Сохраняем заказ в базу данных
-        await saveOrderToDatabase(orderData);
+        const dbResult = await saveOrderToDatabase(orderData);
+        const isFirstOrderFinal = dbResult?.is_first_order === 1;
+        const prevCountFinal = Number(
+          dbResult?.previous_orders_count ?? previousOrdersCount,
+        );
+
+        const headerLine = isFirstOrderFinal
+          ? "🔥 НОВЫЙ КЛИЕНТ 🔥"
+          : `📋 Повторный заказ (${prevCountFinal + 1}-й по счету)`;
+
+        const message = `
+Заказ с сайта ${site}
+
+${headerLine}
+
+Имя: ${formData.lastName}   
+Телефон: +${formData.phoneNumber}
+Telegram: ${telegramUsername}
+Способ доставки: ${selectedMethod === "delivery" ? "Доставка" : "Самовывоз"}
+${
+  selectedMethod === "delivery"
+    ? `Город: ${formData.city}\nАдрес: ${formData.streetAddress}`
+    : ""
+}
+
+Корзина:
+${formattedCart}
+
+Общая сумма: ${totalPrice} ₽
+      `;
 
         // Отправляем в Telegram
+
         const telegramResponse = await fetch("/api/telegram-proxi", {
           method: "POST",
           headers: {
