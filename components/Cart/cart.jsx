@@ -26,7 +26,7 @@ const Cart = () => {
   const hasBlock = cartItems.some((item) => item.type === "Блок");
 
   const onlyPacksAndBlocks = cartItems.every(
-    (item) => item.type === "Пачка" || item.type === "Блок"
+    (item) => item.type === "Пачка" || item.type === "Блок",
   );
 
   return (
@@ -139,6 +139,7 @@ const Cart = () => {
               onClick={checkOut}
               data-bs-dismiss="offcanvas"
               aria-label="Close"
+              disabled={onlyPacksAndBlocks && totalQuantity < 10 && !hasBlock}
             >
               Перейти к оформлению
             </button>
