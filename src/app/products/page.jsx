@@ -13,15 +13,28 @@ export const metadata = {
     canonical: `https://iluma-store.ru/products`,
   },
   openGraph: {
-    title: `Купить IQOS ILUMA и стики Terea с доставкой по России`,
-    description: `Каталог устройств IQOS ILUMA и стиков Terea. Только оригинальная продукция. Быстрая доставка. Iluma-store.`,
-    url: `https://iluma-store.ru/products`,
+    title:
+      "IQOS Iluma и стики Terea — купить в Москве с доставкой | Iluma Store",
+    description:
+      "Каталог устройств IQOS ILUMA и стиков Terea. Только оригинальная продукция. Быстрая доставка. Iluma-store.",
+    url: "https://iluma-store.ru/products",
+    type: "website",
     images: [
       {
-        url: `/favicon/web-app-manifest-512x512`,
-        alt: `Ilumastore`,
+        url: "https://iluma-store.ru/favicon/og-image.png", // обязательно PNG или JPG
+        width: 512,
+        height: 512,
+        alt: "Iluma Store — IQOS Iluma и стики Terea",
       },
     ],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title:
+      "IQOS Iluma и стики Terea — купить в Москве с доставкой | Iluma Store",
+    description:
+      "Каталог устройств IQOS ILUMA и стиков Terea. Только оригинальная продукция. Быстрая доставка. Iluma-store.",
+    images: ["https://iluma-store.ru/favicon/og-image.png"],
   },
 };
 

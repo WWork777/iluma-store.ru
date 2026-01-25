@@ -25,7 +25,7 @@ export const metadata = {
     type: "website",
     images: [
       {
-        url: "https://iluma-store.ru/favicon/web-app-manifest-512x512.png", // обязательно PNG или JPG
+        url: "https://iluma-store.ru/favicon/og-image.png", // обязательно PNG или JPG
         width: 512,
         height: 512,
         alt: "Iluma Store — IQOS Iluma и стики Terea",
@@ -37,7 +37,7 @@ export const metadata = {
     title: "IQOS Iluma и стики Terea — купить в Москве | Iluma Store",
     description:
       "Купить IQOS Iluma и стики Terea с доставкой по Москве и России. Оригинальные устройства, акции, скидки и гарантия качества.",
-    images: ["https://iluma-store.ru/favicon/web-app-manifest-512x512.png"],
+    images: ["https://iluma-store.ru/favicon/og-image.png"],
   },
 };
 

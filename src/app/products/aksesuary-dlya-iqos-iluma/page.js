@@ -28,7 +28,7 @@ export async function generateMetadata() {
       type: "website",
       images: [
         {
-          url: `https://iluma-store.ru/favicon/web-app-manifest-512x512.png`,
+          url: `https://iluma-store.ru/favicon/og-image.png`,
           width: 512,
           height: 512,
           alt: "Iluma Store — аксессуары для IQOS ILUMA",
@@ -39,7 +39,7 @@ export async function generateMetadata() {
       card: "summary_large_image",
       title,
       description,
-      images: ["https://iluma-store.ru/favicon/web-app-manifest-512x512.png"],
+      images: ["https://iluma-store.ru/favicon/og-image.png"],
     },
   };
 }

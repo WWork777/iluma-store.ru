@@ -1,10 +1,10 @@
-export const dynamic = "force-dynamic";
+export const revalidate = 3600;
 import ClientFilters from "./client";
 
 async function fetchItems(type, ref) {
   const res = await fetch(
     `https://iluma-store.ru/api/products/getproductinfo/${type}/${ref}`,
-    { cache: "no-store" }
+    { next: { revalidate: 3600 } },
   );
   if (!res.ok) throw new Error("Ошибка загрузки товаров");
   return res.json();
@@ -31,7 +31,7 @@ export async function generateMetadata({ params }) {
       url: `https://iluma-store.ru/products/product-info/${items.type}/${items.ref}`,
       images: [
         {
-          url: `/images/${items.image}`,
+          url: `https://iluma-store.ru/favicon/og-image.png`,
           alt: items.name,
         },
       ],
@@ -45,8 +45,10 @@ export default async function Page({ params }) {
   try {
     items = await fetchItems(type, ref);
   } catch (error) {
-    console.error(error);
-    return <p>Ошибка загрузки данных</p>;
+    return {
+      title: "Товар не найден",
+      robots: { index: false },
+    };
   }
 
   return <ClientFilters items={items} />;

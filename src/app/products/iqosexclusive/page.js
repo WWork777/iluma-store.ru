@@ -25,7 +25,7 @@ export async function generateMetadata() {
       url: `https://iluma-store.ru/products/iqosexclusive`,
       images: [
         {
-          url: `/favicon/web-app-manifest-512x512`,
+          url: `https://iluma-store.ru/favicon/og-image.png`,
           alt: `Ilumastore`,
         },
       ],

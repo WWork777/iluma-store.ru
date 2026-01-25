@@ -15,10 +15,17 @@ export const metadata = {
     url: `https://iluma-store.ru/contacts`,
     images: [
       {
-        url: `/favicon/web-app-manifest-512x512`,
+        url: `https://iluma-store.ru/favicon/og-image.png`,
         alt: `Ilumastore`,
       },
     ],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Контакты | Iluma-store",
+    description:
+      "Свяжитесь с магазином устройствв IQOS ILUMA и стики Terea – только оригинальная продукция. Быстрая доставка по всей России и скидки для постоянных клиентов.",
+    images: ["https://iluma-store.ru/favicon/og-image.png"],
   },
 };
 
@@ -39,8 +46,7 @@ const Contacts = () => {
       <div className="social">
         <h3>Социальные сети</h3>
         <p>
-          Telegram:{" "}
-          <Link href="https://t.me/Ilumastore2025">@IlumaStore</Link>
+          Telegram: <Link href="https://t.me/Ilumastore2025">@IlumaStore</Link>
         </p>
         <p>
           Whatsapp:{" "}
