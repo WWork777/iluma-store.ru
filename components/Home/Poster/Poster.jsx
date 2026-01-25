@@ -12,80 +12,91 @@ import Image from "next/image";
 
 export default function Poster() {
   return (
-    <>
-      <div className="poster-container">
-        <Swiper
-          slidesPerView={1}
-          spaceBetween={30}
-          pagination={{
-            el: ".swiper-pagination",
-            clickable: true,
-            renderBullet: (index, className) => {
-              return `<span class="${className}"></span>`;
-            },
-          }}
-          modules={[Pagination]}
-          className="poster"
+    <Swiper
+      slidesPerView={1}
+      spaceBetween={30}
+      pagination={{
+        el: ".swiper-pagination",
+        clickable: true,
+        renderBullet: (index, className) => {
+          return `<span class="${className}" aria-label="Слайд ${index + 1}"></span>`;
+        },
+      }}
+      modules={[Pagination]}
+      className="poster"
+    >
+      {/* Слайд 1 — Limited Edition */}
+      <SwiperSlide>
+        <Link
+          href="/products/iqosexclusive"
+          className="services-card"
+          aria-label="IQOS Iluma Limited Edition — купить сейчас"
         >
-          <SwiperSlide>
-            <Link href={"/products/iqosexclusive"} className="services-card">
-              <div>
-                <p>IQOS iLuma Limited Edition</p>
-                <span>В наличии! Успевайте купить!</span>
-              </div>
-              <strong>LIMITED</strong>
-            </Link>
-            <Image
-              src={"/Home/Poster/posterGalaxy.webp"}
-              alt="IQOS Iluma"
-              width={1000}
-              height={1000}
-              loading="lazy"
-            />
-          </SwiperSlide>
-          <SwiperSlide>
-            <Link href={"/products/terea"} className="services-card">
-              <div>
-                <p>Terea for IQOS ILUMA</p>
-                <span>
-                  Стики Terea для IQOS Iluma — попробуйте и&nbsp;откройте для
-                  себя новый уровень наслаждения!
-                </span>
-              </div>
-            </Link>
-            <Image
-              src={"/Home/Poster/poster2.png"}
-              alt="IQOS Iluma"
-              width={1000}
-              height={1000}
-              loading="lazy"
-              priority={false}
-            />
-          </SwiperSlide>
-          <SwiperSlide>
-            <Link href={"/blog"} className="services-card">
-              <div>
-                <p>Наш Блог!</p>
-                <span>
-                  Информация о разных аспектах использования стиков. Сравнения,
-                  оценки, инструкции!
-                </span>
-              </div>
-              {/* <strong>Блог</strong> */}
-            </Link>
-            <Image
-              src={"/Home/Poster/posterGalaxy.webp"}
-              alt="IQOS Iluma"
-              width={1000}
-              height={1000}
-              loading="lazy"
-              priority={false}
-            />
-          </SwiperSlide>
+          <div>
+            <p>IQOS Iluma Limited Edition</p>
+            <span>В наличии! Успевайте купить!</span>
+          </div>
+          <strong>LIMITED</strong>
+        </Link>
+        <Image
+          src="/Home/Poster/posterGalaxy.webp"
+          alt="IQOS Iluma Limited Edition"
+          width={1000}
+          height={1000}
+          loading="eager"
+          priority={true}
+        />
+      </SwiperSlide>
 
-          <div className="swiper-pagination"></div>
-        </Swiper>
-      </div>
-    </>
+      {/* Слайд 2 — Terea Sticks */}
+      <SwiperSlide>
+        <Link
+          href="/products/stiki-terea-dlya-iqos-iluma"
+          className="services-card"
+          aria-label="Стики Terea для IQOS Iluma — купить"
+        >
+          <div>
+            <p>Terea for IQOS ILUMA</p>
+            <span>
+              Стики Terea для IQOS Iluma — попробуйте и откройте новый уровень
+              наслаждения!
+            </span>
+          </div>
+        </Link>
+        <Image
+          src="/Home/Poster/poster2.png"
+          alt="Стики Terea для IQOS Iluma"
+          width={1000}
+          height={1000}
+          loading="lazy"
+        />
+      </SwiperSlide>
+
+      {/* Слайд 3 — Блог */}
+      <SwiperSlide>
+        <Link
+          href="/blog"
+          className="services-card"
+          aria-label="Блог Iluma Store — статьи и инструкции"
+        >
+          <div>
+            <p>Наш Блог!</p>
+            <span>
+              Информация о разных аспектах использования стиков. Сравнения,
+              оценки, инструкции!
+            </span>
+          </div>
+        </Link>
+        <Image
+          src="/Home/Poster/posterGalaxy.webp"
+          alt="Блог о IQOS Iluma и Terea"
+          width={1000}
+          height={1000}
+          loading="lazy"
+        />
+      </SwiperSlide>
+
+      <div className="swiper-pagination"></div>
+    </Swiper>
   );
 }

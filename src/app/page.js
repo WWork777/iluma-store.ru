@@ -10,39 +10,87 @@ import Reviews from "../../components/Home/Reviews/Reviews";
 import ModalManager from "../../components/ModalManager/ModalManager";
 
 export const metadata = {
-  title: "Купить IQOS Iluma и Terea в Москве | Iluma Store",
+  title: "IQOS Iluma и стики Terea — купить в Москве с доставкой | Iluma Store",
   description:
-    "Оригинальные устройства IQOS Iluma и стики Terea с доставкой по РФ. Гарантия подлинности, низкие цены и акции.",
+    "Купить IQOS Iluma и стики Terea с доставкой по Москве и России. Оригинальные устройства, акции, скидки и гарантия качества в Iluma Store.",
   alternates: {
-    canonical: `https://iluma-store.ru`,
+    canonical: "https://iluma-store.ru",
   },
   openGraph: {
-    title: `Купить IQOS Iluma и Terea в Москве | Iluma Store`,
-    description: `Оригинальные устройства IQOS Iluma и стики Terea с доставкой по РФ. Гарантия подлинности, низкие цены и акции.`,
-    url: `https://iluma-store.ru`,
+    title:
+      "IQOS Iluma и стики Terea — купить в Москве с доставкой | Iluma Store",
+    description:
+      "Купить IQOS Iluma и стики Terea с доставкой по Москве и России. Оригинальные устройства, акции, скидки и гарантия качества в Iluma Store.",
+    url: "https://iluma-store.ru",
+    type: "website",
     images: [
       {
-        url: `/favicon/web-app-manifest-512x512`,
-        alt: `Ilumastore`,
+        url: "https://iluma-store.ru/favicon/web-app-manifest-512x512.png", // обязательно PNG или JPG
+        width: 512,
+        height: 512,
+        alt: "Iluma Store — IQOS Iluma и стики Terea",
       },
     ],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "IQOS Iluma и стики Terea — купить в Москве | Iluma Store",
+    description:
+      "Купить IQOS Iluma и стики Terea с доставкой по Москве и России. Оригинальные устройства, акции, скидки и гарантия качества.",
+    images: ["https://iluma-store.ru/favicon/web-app-manifest-512x512.png"],
   },
 };
 
 export default function Home() {
   return (
     <>
-      <h1 className="hidden-h1">
-        IQOS Iluma и стики Terea недорого и с доставкой по всей России
-      </h1>
-      <Hero />
-      <Poster />
-      <Preview />
-      <Exclusive />
-      <New />
-      <About />
-      <Reviews />
-      <ModalManager/>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "Store",
+            name: "Iluma Store",
+            url: "https://iluma-store.ru",
+            description:
+              "Официальный магазин IQOS Iluma и стиков Terea с доставкой по России",
+            address: {
+              "@type": "PostalAddress",
+              addressCountry: "RU",
+              addressLocality: "Москва",
+            },
+          }),
+        }}
+      />
+      <main>
+        <section>
+          <Hero />
+        </section>
+        <section>
+          <Poster />
+        </section>
+        <section>
+          <Preview />
+        </section>
+
+        <section>
+          <Exclusive />
+        </section>
+
+        <section>
+          <New />
+        </section>
+
+        <section>
+          <About />
+        </section>
+
+        <section>
+          <Reviews />
+        </section>
+      </main>
+
+      {/* <ModalManager /> */}
     </>
   );
 }

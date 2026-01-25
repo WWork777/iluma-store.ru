@@ -1,4 +1,4 @@
-@import '../../public/const.scss';
+@import "../../public/const.scss";
 
 html,
 body {
@@ -10,15 +10,15 @@ body {
 body {
   color: $font;
   background: $body;
-  font-family: 'Montserrat', sans-serif;
+  font-family: "Montserrat", sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   font-weight: 500;
   position: relative; // важно для позиционирования псевдоэлемента
-  
+
   // Псевдоэлемент для фона
   &::before {
-    content: '';
+    content: "";
     position: fixed; // или absolute в зависимости от ваших нужд
     top: 0;
     left: 0;

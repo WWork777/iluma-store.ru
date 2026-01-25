@@ -12,23 +12,34 @@ async function fetchItems() {
 export async function generateMetadata() {
   const title =
     "Купить аксессуары для IQOS ILUMA в Iluma-store с доставкой по России";
+  const description =
+    "Каталог аксессуаров для устройств IQOS ILUMA с доставкой по Москве и всей России. Лучший выбор, акции и скидки!";
+
   return {
     title,
-    description:
-      "Каталог аксессуаров для устройств IQOS ILUMA с доставкой по всей России. Лучший выбор вкусов и брендов!",
+    description,
     alternates: {
-      canonical: `https://iluma-store.ru/products/devices`,
+      canonical: `https://iluma-store.ru/products/aksessuary-dlya-iqos-iluma`,
     },
     openGraph: {
-      title: `Купить аксессуары для IQOS ILUMA в Iluma-store с доставкой по России`,
-      description: `Каталог аксессуаров для устройств IQOS ILUMA с доставкой по всей России. Лучший выбор вкусов и брендов!`,
-      url: `https://iluma-store.ru/products/devices`,
+      title,
+      description,
+      url: `https://iluma-store.ru/products/aksessuary-dlya-iqos-iluma`,
+      type: "website",
       images: [
         {
-          url: `/favicon/web-app-manifest-512x512`,
-          alt: `Ilumastore`,
+          url: `https://iluma-store.ru/favicon/web-app-manifest-512x512.png`,
+          width: 512,
+          height: 512,
+          alt: "Iluma Store — аксессуары для IQOS ILUMA",
         },
       ],
+    },
+    twitter: {
+      card: "summary_large_image",
+      title,
+      description,
+      images: ["https://iluma-store.ru/favicon/web-app-manifest-512x512.png"],
     },
   };
 }
@@ -44,8 +55,8 @@ export default async function Page() {
 
   return (
     <div className="products-container">
-      <h1 style={{ position: "absolute", zIndex: "-9999" }}>
-        Аксессуары Iluma
+      <h1 className="page-title">
+        Аксессуары для IQOS ILUMA в Москве и России
       </h1>
       <ClientFilters items={items} />
     </div>

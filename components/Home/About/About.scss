@@ -60,7 +60,7 @@
       display: flex;
       flex-direction: column;
       gap: 24px;
-      div {
+      article {
         padding: 40px;
         width: calc(100% - 12px);
         height: calc(50% - 12px);
@@ -253,7 +253,7 @@
       }
       .about-mission {
         gap: 15px;
-        div {
+        article {
           padding: 25px;
           width: 100%;
           p {

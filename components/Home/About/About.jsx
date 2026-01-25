@@ -4,7 +4,7 @@ import Image from "next/image";
 export default function About() {
   return (
     <>
-      <div className="about">
+      <section className="about" aria-label="О магазине Iluma Store">
         <h2>Премиальные устройства по доступным ценам</h2>
         <div className="about-container">
           <div className="about-text">
@@ -19,10 +19,11 @@ export default function About() {
               alt="О магазине IlumaStore"
               width={1000}
               height={1000}
+              priority={true} // важное изображение для загрузки
             />
           </div>
           <div className="about-mission">
-            <div className="mission">
+            <article className="mission" aria-label="Наша миссия">
               <p>
                 Наша миссия — это предоставить нашим клиентам лучший опыт
                 покупки
@@ -111,8 +112,8 @@ export default function About() {
                   </g>
                 </svg>
               </div>
-            </div>
-            <div className="purpose">
+            </article>
+            <article className="purpose" aria-label="Наша цель">
               <p>
                 Наша цель&nbsp;—&nbsp;стать вашим надежным партнером
                 и&nbsp;проводником
@@ -130,10 +131,10 @@ export default function About() {
                 </svg>
                 <div className="back-icon"></div>
               </div>
-            </div>
+            </article>
           </div>
         </div>
-      </div>
+      </section>
     </>
   );
 }
