@@ -39,7 +39,7 @@ export default function RootLayout({ children }) {
           <YandexMetrika />
           <Bootstrap />
           <Header />
-          <div className="newYearFon">{children}</div>
+          {children}
           <Footer />
           <Cart />
           <CartButton />

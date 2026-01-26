@@ -10,10 +10,9 @@ async function fetchItems() {
 }
 
 export async function generateMetadata() {
-  const title =
-    "Купить IQOS ILUMA в Москве и России — оригинальные устройства | Iluma Store";
+  const title = "Устройства IQOS ILUMA - купить";
   const description =
-    "Официальный магазин IQOS ILUMA. Покупайте оригинальные устройства с доставкой по Москве и всей России. Гарантия качества, акции и скидки на Iluma Store.";
+    "Устройства IQOS ILUMA и ILUMA Prime. Оригинал, актуальные цены, доставка по России.";
 
   return {
     title,

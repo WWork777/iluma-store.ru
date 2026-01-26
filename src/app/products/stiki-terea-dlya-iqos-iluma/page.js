@@ -10,9 +10,9 @@ async function fetchItems() {
 }
 
 export async function generateMetadata() {
-  const title = "Купить стики Terea для IQOS ILUMA с доставкой по России";
+  const title = "Стики TEREA для IQOS ILUMA";
   const description =
-    "Купить стики Terea для IQOS ILUMA с доставкой по Москве и всей России. Лучший выбор вкусов и брендов, акции и скидки!";
+    "Стики Terea для IQOS ILUMA. Все скусы в наличии, оригинальная продукци, доставка.";
 
   return {
     title,

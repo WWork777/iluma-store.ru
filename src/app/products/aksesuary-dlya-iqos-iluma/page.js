@@ -10,10 +10,9 @@ async function fetchItems() {
 }
 
 export async function generateMetadata() {
-  const title =
-    "Купить аксессуары для IQOS ILUMA в Iluma-store с доставкой по России";
+  const title = "Аксессуары для IQOS ILUMA";
   const description =
-    "Каталог аксессуаров для устройств IQOS ILUMA с доставкой по Москве и всей России. Лучший выбор, акции и скидки!";
+    "Аксессуары для IQOS ILUMA. Чехлы, зарядки, уход за устройством. Оригинал.";
 
   return {
     title,
