@@ -34,10 +34,10 @@ const Contacts = () => {
     <div className="contacts">
       <h1>Контакты IlumaStore</h1>
       <div className="adress">
-        <h3>Адрес</h3>
+        {/* <h3>Адрес</h3>
         <p>
           г.Москва - ул. Римского-Корсакова, 11, корп 8 (Ориентир: Пункт OZON)
-        </p>
+        </p> */}
         <p>
           Телефон: <Link href="tel:+7 (995) 153-80-19">+7 (995) 153-80-19</Link>
         </p>
@@ -55,7 +55,7 @@ const Contacts = () => {
           </Link>
         </p>
       </div>
-      <Map />
+      {/* <Map /> */}
     </div>
   );
 };
