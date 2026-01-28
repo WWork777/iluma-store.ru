@@ -45,9 +45,9 @@ async function fetchItems() {
 }
 
 export async function generateMetadata() {
-  const title = "Устройства IQOS ILUMA - купить";
+  const title = "Устройства IQOS ILUMA - купить в Москве";
   const description =
-    "Устройства IQOS ILUMA и ILUMA Prime. Оригинал, актуальные цены, доставка по России.";
+    "Устройства IQOS ILUMA и ILUMA Prime. Оригинал, актуальные цены, доставка по Москве и России.";
 
   return {
     title,

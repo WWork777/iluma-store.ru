@@ -45,9 +45,9 @@ async function fetchItems() {
 }
 
 export async function generateMetadata() {
-  const title = "Аксессуары для IQOS ILUMA";
+  const title = "Аксессуары для IQOS ILUMA Мсоква";
   const description =
-    "Аксессуары для IQOS ILUMA. Чехлы, зарядки, уход за устройством. Оригинал.";
+    "Аксессуары для IQOS ILUMA в Москве. Чехлы, зарядки, уход за устройством. Оригинал.";
 
   return {
     title,

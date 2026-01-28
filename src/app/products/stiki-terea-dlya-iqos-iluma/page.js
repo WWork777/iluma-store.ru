@@ -45,9 +45,9 @@ async function fetchItems() {
 }
 
 export async function generateMetadata() {
-  const title = "Стики TEREA для IQOS ILUMA";
+  const title = "Стики TEREA для IQOS ILUMA Москва";
   const description =
-    "Стики Terea для IQOS ILUMA. Все скусы в наличии, оригинальная продукция, доставка.";
+    "Стики Terea для IQOS ILUMA в Москве. Все скусы в наличии, оригинальная продукция, доставка.";
 
   return {
     title,
