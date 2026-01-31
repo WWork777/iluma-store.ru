@@ -22,7 +22,7 @@ async function safeFetch(url, options = {}) {
     throw error;
   }
 }
-
+  
 async function fetchItems(type, ref) {
   // ВАЖНО: Использовать внутренний адрес!
   // Определить адрес в зависимости от среды
