@@ -1,6 +1,13 @@
 export const dynamic = "force-dynamic";
 import ClientFilters from "./client";
 
+// Добавляем metadataBase
+export const metadataBase = new URL(
+  process.env.NODE_ENV === "production"
+    ? "https://iluma-store.ru"
+    : "http://localhost:3000"
+);
+
 async function safeFetch(url, options = {}) {
   const controller = new AbortController();
   const timeout = setTimeout(() => controller.abort(), 5000);
@@ -21,16 +28,20 @@ async function safeFetch(url, options = {}) {
 }
 
 async function fetchItems() {
-  const baseUrl =
-    process.env.NODE_ENV === "production" && typeof window === "undefined"
-      ? "http://localhost:3001"
-      : "";
-
   try {
-    const apiUrl =
-      typeof window === "undefined"
-        ? `${baseUrl}/api/products/getterea`
-        : `/api/products/getterea`;
+    // Для серверного рендеринга используем абсолютный URL
+    let apiUrl;
+    
+    if (typeof window === "undefined") {
+      // На сервере используем абсолютный URL
+      const baseUrl = process.env.NODE_ENV === "production"
+        ? "https://iluma-store.ru"
+        : "http://localhost:3000";
+      apiUrl = `${baseUrl}/api/products/getterea`;
+    } else {
+      // На клиенте используем относительный URL
+      apiUrl = `/api/products/getterea`;
+    }
 
     return await safeFetch(apiUrl, {
       cache: "no-store",
@@ -52,13 +63,14 @@ export async function generateMetadata() {
   return {
     title,
     description,
+    metadataBase,
     alternates: {
-      canonical: `https://iluma-store.ru/products/stiki-terea-dlya-iqos-iluma`,
+      canonical: `/products/stiki-terea-dlya-iqos-iluma`,
     },
     openGraph: {
       title,
       description,
-      url: `https://iluma-store.ru/products/stiki-terea-dlya-iqos-iluma`,
+      url: `/products/stiki-terea-dlya-iqos-iluma`,
       type: "website",
       images: [
         {
