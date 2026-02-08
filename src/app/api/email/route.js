@@ -91,7 +91,7 @@ export async function POST(req) {
               box-shadow: 0 2px 10px rgba(0,0,0,0.1);
             }
             .email-header {
-              background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+              background: #2f2d2e;
               color: white;
               padding: 20px;
               text-align: center;
@@ -110,7 +110,7 @@ export async function POST(req) {
             }
             .order-info {
               background-color: #f8f9fa;
-              border-left: 4px solid #667eea;
+              border-left: 4px solid #2f2d2e;
               padding: 15px;
               margin: 20px 0;
               border-radius: 5px;
