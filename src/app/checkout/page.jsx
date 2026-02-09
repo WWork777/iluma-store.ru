@@ -877,249 +877,246 @@ ${formattedCart}
         setLoading(false);
       }
     }
+  };
 
-    const handleExternalSubmit = () => {
-      if (formRef.current) {
-        formRef.current.requestSubmit();
-      }
-    };
+  const handleExternalSubmit = () => {
+    if (formRef.current) {
+      formRef.current.requestSubmit();
+    }
+  };
 
-    return (
-      <div className="checkout-page">
-        <div className="checkout-form">
-          <div className="plitka">
-            <h1>Оформление заказа</h1>
-            <h5>
-              ВАЖНО! Укажите Ваш номер в WhatsApp или Telegram ник для связи
-            </h5>
-          </div>
-          <form onSubmit={handleSubmit} ref={formRef}>
-            <div className="checkout-name">
-              <h4>Контактные данные</h4>
-              <input
-                type="text"
-                name="lastName"
-                placeholder="Ваше имя"
-                value={formData.lastName}
-                onChange={handleInputChange}
-              />
-              {errors.lastName && (
-                <p className="error" style={{ color: "red" }}>
-                  {errors.lastName}
-                </p>
-              )}
-
-              <input
-                type="text"
-                name="telegram"
-                placeholder="Telegram username (необязательно)"
-                value={formData.telegram}
-                onChange={handleInputChange}
-                onFocus={(e) => {
-                  // Если поле пустое или не начинается с @, добавляем @
-                  const value = formData.telegram;
-                  if (!value.startsWith("@")) {
-                    setFormData((prev) => ({
-                      ...prev,
-                      telegram: "@" + (value || ""),
-                    }));
-
-                    // Устанавливаем курсор после @
-                    setTimeout(() => {
-                      e.target.setSelectionRange(1, 1);
-                    }, 0);
-                  }
-                }}
-                onBlur={(e) => {
-                  // Если только @, очищаем поле
-                  if (formData.telegram === "@") {
-                    setFormData((prev) => ({
-                      ...prev,
-                      telegram: "",
-                    }));
-                  }
-                }}
-              />
-              {errors.telegram && (
-                <p className="error" style={{ color: "red" }}>
-                  {errors.telegram}
-                </p>
-              )}
-
-              <PhoneInput
-                country={"ru"}
-                value={formData.phoneNumber}
-                onChange={handlePhoneChange}
-                disableDropdown={true}
-                onlyCountries={["ru"]}
-                inputStyle={{
-                  width: "100%",
-                  fontSize: "16px",
-                  padding: "10px 20px",
-                  fontFamily: "inherit",
-                }}
-                placeholder="Введите номер телефона"
-              />
-              {errors.phoneNumber && (
-                <p className="error" style={{ color: "red" }}>
-                  {errors.phoneNumber}
-                </p>
-              )}
-            </div>
-
-            <div className="checkout-delivery">
-              <h4>Способ доставки</h4>
-              <div className="checkout-delivery-method">
-                <button
-                  type="button"
-                  className={selectedMethod === "pickup" ? "active" : ""}
-                  onClick={() => setSelectedMethod("pickup")}
-                  disabled={true}
-                  style={{
-                    opacity: 0.5,
-                    cursor: "not-allowed",
-                    position: "relative",
-                  }}
-                >
-                  Самовывоз
-                  <br />
-                  <span style={{ fontSize: "14px", color: "rgb(198, 58, 58)" }}>
-                    Недоступен
-                  </span>
-                </button>
-                {onlyPacksAndBlocks && totalQuantity < 10 && !hasBlock ? (
-                  <button type="button" className={selectedMethod} disabled>
-                    Доставка<br></br>
-                    <span
-                      style={{ fontSize: "14px", color: "rgb(198, 58, 58)" }}
-                    >
-                      Нужно 10 пачек или блок
-                    </span>
-                  </button>
-                ) : (
-                  <button
-                    type="button"
-                    className={selectedMethod === "delivery" ? "active" : ""}
-                    onClick={() => setSelectedMethod("delivery")}
-                  >
-                    Доставка
-                  </button>
-                )}
-              </div>
-
-              {selectedMethod === "delivery" && (
-                <div className="checkout-delivery-address">
-                  <input
-                    type="text"
-                    name="city"
-                    placeholder="Город"
-                    value={formData.city}
-                    onChange={handleInputChange}
-                    disabled={
-                      onlyPacksAndBlocks && totalQuantity < 10 && !hasBlock
-                    }
-                  />
-                  {errors.city && (
-                    <p className="error" style={{ color: "red" }}>
-                      {errors.city}
-                    </p>
-                  )}
-
-                  <input
-                    type="text"
-                    name="streetAddress"
-                    placeholder="Номер дома и название улицы"
-                    value={formData.streetAddress}
-                    onChange={handleInputChange}
-                    disabled={
-                      onlyPacksAndBlocks && totalQuantity < 10 && !hasBlock
-                    }
-                  />
-                  {errors.streetAddress && (
-                    <p className="error" style={{ color: "red" }}>
-                      {errors.streetAddress}
-                    </p>
-                  )}
-                </div>
-              )}
-
-              {selectedMethod === "pickup" && (
-                <div className="checkout-delivery-pickup">
-                  <p style={{ color: "rgb(198, 58, 58)", fontWeight: "bold" }}>
-                    ⚠️ Самовывоз временно недоступен. Пожалуйста, выберите
-                    доставку.
-                  </p>
-                </div>
-              )}
-            </div>
-          </form>
+  return (
+    <div className="checkout-page">
+      <div className="checkout-form">
+        <div className="plitka">
+          <h1>Оформление заказа</h1>
+          <h5>
+            ВАЖНО! Укажите Ваш номер в WhatsApp или Telegram ник для связи
+          </h5>
         </div>
+        <form onSubmit={handleSubmit} ref={formRef}>
+          <div className="checkout-name">
+            <h4>Контактные данные</h4>
+            <input
+              type="text"
+              name="lastName"
+              placeholder="Ваше имя"
+              value={formData.lastName}
+              onChange={handleInputChange}
+            />
+            {errors.lastName && (
+              <p className="error" style={{ color: "red" }}>
+                {errors.lastName}
+              </p>
+            )}
 
-        <div className="checkout-table">
-          <h4>Ваша корзина</h4>
-          {cartItems.length > 0 ? (
-            <div>
-              <ul className="cart-list">
-                {cartItems.map((item) => (
-                  <li key={item.id} className="cart-item">
-                    <img
-                      src={item.image}
-                      alt={item.name}
-                      className="cart-item-image"
-                    />
-                    <div className="cart-item-info">
-                      <div className="cart-item-name">
-                        <p>{item.name}</p>
-                        {item.type === "default" ? "" : <p>({item.type})</p>}
-                      </div>
-                      <div className="price">
-                        <p>Количество: {item.quantity}</p>
-                        <p>Цена: {item.price} ₽</p>
-                      </div>
-                    </div>
-                  </li>
-                ))}
-              </ul>
-              <div className="checkout-total">
-                <p>Итого:</p>
-                <p>{calculateTotalPrice()} ₽</p>
-              </div>
-              {/* Убрана секция с чекбоксом согласия */}
+            <input
+              type="text"
+              name="telegram"
+              placeholder="Telegram username (необязательно)"
+              value={formData.telegram}
+              onChange={handleInputChange}
+              onFocus={(e) => {
+                // Если поле пустое или не начинается с @, добавляем @
+                const value = formData.telegram;
+                if (!value.startsWith("@")) {
+                  setFormData((prev) => ({
+                    ...prev,
+                    telegram: "@" + (value || ""),
+                  }));
+
+                  // Устанавливаем курсор после @
+                  setTimeout(() => {
+                    e.target.setSelectionRange(1, 1);
+                  }, 0);
+                }
+              }}
+              onBlur={(e) => {
+                // Если только @, очищаем поле
+                if (formData.telegram === "@") {
+                  setFormData((prev) => ({
+                    ...prev,
+                    telegram: "",
+                  }));
+                }
+              }}
+            />
+            {errors.telegram && (
+              <p className="error" style={{ color: "red" }}>
+                {errors.telegram}
+              </p>
+            )}
+
+            <PhoneInput
+              country={"ru"}
+              value={formData.phoneNumber}
+              onChange={handlePhoneChange}
+              disableDropdown={true}
+              onlyCountries={["ru"]}
+              inputStyle={{
+                width: "100%",
+                fontSize: "16px",
+                padding: "10px 20px",
+                fontFamily: "inherit",
+              }}
+              placeholder="Введите номер телефона"
+            />
+            {errors.phoneNumber && (
+              <p className="error" style={{ color: "red" }}>
+                {errors.phoneNumber}
+              </p>
+            )}
+          </div>
+
+          <div className="checkout-delivery">
+            <h4>Способ доставки</h4>
+            <div className="checkout-delivery-method">
               <button
-                onClick={handleExternalSubmit}
-                disabled={loading || selectedMethod === "pickup"}
+                type="button"
+                className={selectedMethod === "pickup" ? "active" : ""}
+                onClick={() => setSelectedMethod("pickup")}
+                disabled={true}
                 style={{
-                  opacity: selectedMethod === "pickup" ? 0.5 : 1,
-                  cursor:
-                    selectedMethod === "pickup" ? "not-allowed" : "pointer",
+                  opacity: 0.5,
+                  cursor: "not-allowed",
+                  position: "relative",
                 }}
               >
-                {loading ? "Загрузка..." : "Заказать"}
+                Самовывоз
+                <br />
+                <span style={{ fontSize: "14px", color: "rgb(198, 58, 58)" }}>
+                  Недоступен
+                </span>
               </button>
-              {selectedMethod === "pickup" && (
-                <p
-                  style={{
-                    color: "rgb(198, 58, 58)",
-                    fontSize: "14px",
-                    textAlign: "center",
-                    marginTop: "10px",
-                  }}
+              {onlyPacksAndBlocks && totalQuantity < 10 && !hasBlock ? (
+                <button type="button" className={selectedMethod} disabled>
+                  Доставка<br></br>
+                  <span style={{ fontSize: "14px", color: "rgb(198, 58, 58)" }}>
+                    Нужно 10 пачек или блок
+                  </span>
+                </button>
+              ) : (
+                <button
+                  type="button"
+                  className={selectedMethod === "delivery" ? "active" : ""}
+                  onClick={() => setSelectedMethod("delivery")}
                 >
-                  Самовывоз недоступен. Выберите доставку для оформления заказа.
-                </p>
+                  Доставка
+                </button>
               )}
             </div>
-          ) : (
-            <div>
-              <h5 style={{ textAlign: "center", marginTop: "30%" }}>
-                Корзина пуста
-              </h5>
-            </div>
-          )}
-        </div>
+
+            {selectedMethod === "delivery" && (
+              <div className="checkout-delivery-address">
+                <input
+                  type="text"
+                  name="city"
+                  placeholder="Город"
+                  value={formData.city}
+                  onChange={handleInputChange}
+                  disabled={
+                    onlyPacksAndBlocks && totalQuantity < 10 && !hasBlock
+                  }
+                />
+                {errors.city && (
+                  <p className="error" style={{ color: "red" }}>
+                    {errors.city}
+                  </p>
+                )}
+
+                <input
+                  type="text"
+                  name="streetAddress"
+                  placeholder="Номер дома и название улицы"
+                  value={formData.streetAddress}
+                  onChange={handleInputChange}
+                  disabled={
+                    onlyPacksAndBlocks && totalQuantity < 10 && !hasBlock
+                  }
+                />
+                {errors.streetAddress && (
+                  <p className="error" style={{ color: "red" }}>
+                    {errors.streetAddress}
+                  </p>
+                )}
+              </div>
+            )}
+
+            {selectedMethod === "pickup" && (
+              <div className="checkout-delivery-pickup">
+                <p style={{ color: "rgb(198, 58, 58)", fontWeight: "bold" }}>
+                  ⚠️ Самовывоз временно недоступен. Пожалуйста, выберите
+                  доставку.
+                </p>
+              </div>
+            )}
+          </div>
+        </form>
       </div>
-    );
-  };
+
+      <div className="checkout-table">
+        <h4>Ваша корзина</h4>
+        {cartItems.length > 0 ? (
+          <div>
+            <ul className="cart-list">
+              {cartItems.map((item) => (
+                <li key={item.id} className="cart-item">
+                  <img
+                    src={item.image}
+                    alt={item.name}
+                    className="cart-item-image"
+                  />
+                  <div className="cart-item-info">
+                    <div className="cart-item-name">
+                      <p>{item.name}</p>
+                      {item.type === "default" ? "" : <p>({item.type})</p>}
+                    </div>
+                    <div className="price">
+                      <p>Количество: {item.quantity}</p>
+                      <p>Цена: {item.price} ₽</p>
+                    </div>
+                  </div>
+                </li>
+              ))}
+            </ul>
+            <div className="checkout-total">
+              <p>Итого:</p>
+              <p>{calculateTotalPrice()} ₽</p>
+            </div>
+            {/* Убрана секция с чекбоксом согласия */}
+            <button
+              onClick={handleExternalSubmit}
+              disabled={loading || selectedMethod === "pickup"}
+              style={{
+                opacity: selectedMethod === "pickup" ? 0.5 : 1,
+                cursor: selectedMethod === "pickup" ? "not-allowed" : "pointer",
+              }}
+            >
+              {loading ? "Загрузка..." : "Заказать"}
+            </button>
+            {selectedMethod === "pickup" && (
+              <p
+                style={{
+                  color: "rgb(198, 58, 58)",
+                  fontSize: "14px",
+                  textAlign: "center",
+                  marginTop: "10px",
+                }}
+              >
+                Самовывоз недоступен. Выберите доставку для оформления заказа.
+              </p>
+            )}
+          </div>
+        ) : (
+          <div>
+            <h5 style={{ textAlign: "center", marginTop: "30%" }}>
+              Корзина пуста
+            </h5>
+          </div>
+        )}
+      </div>
+    </div>
+  );
 };
 
 export default CheckoutPage;
