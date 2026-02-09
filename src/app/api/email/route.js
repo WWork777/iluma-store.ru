@@ -36,7 +36,7 @@ export async function POST(req) {
       },
     });
 
-    const to = "alena93_00@inbox.ru";
+    const to = "ww9200073@gmail.com";
     const from = "sersur42@yandex.ru";
 
     // Извлекаем информацию из текста
