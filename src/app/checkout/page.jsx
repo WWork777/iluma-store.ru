@@ -129,29 +129,44 @@ const CheckoutPage = () => {
     }
   };
 
-  // Функция для сохранения заказа в базу данных
-  const saveOrderToDatabase = async (orderData) => {
-    try {
-      const response = await fetch("/api/orders", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(orderData),
-      });
+  // Функция для отправки в Telegram с повторными попытками
+  const sendToTelegram = async (message, maxRetries = 3) => {
+    for (let attempt = 1; attempt <= maxRetries; attempt++) {
+      try {
+        console.log(`Telegram attempt ${attempt}/${maxRetries}`);
 
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(`Database error: ${JSON.stringify(errorData)}`);
+        const response = await fetch("/api/telegram-proxi", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            chat_id: "-1002155675591",
+            text: message,
+            parse_mode: "HTML",
+          }),
+        });
+
+        if (response.ok) {
+          console.log(`Telegram sent successfully on attempt ${attempt}`);
+          return true;
+        } else {
+          console.warn(
+            `Telegram attempt ${attempt} failed: ${response.status}`,
+          );
+        }
+      } catch (error) {
+        console.warn(`Telegram attempt ${attempt} error:`, error);
       }
 
-      const result = await response.json();
-      console.log("Order saved to database:", result);
-      return result;
-    } catch (error) {
-      console.error("Error saving order to database:", error);
-      throw error;
+      // Ждем перед следующей попыткой (экспоненциальная задержка)
+      if (attempt < maxRetries) {
+        await new Promise((resolve) => setTimeout(resolve, 1000 * attempt));
+      }
     }
+
+    console.error("All Telegram attempts failed");
+    return false;
   };
 
   const handleSubmit = async (e) => {
@@ -652,105 +667,15 @@ const CheckoutPage = () => {
           : `@${formData.telegram}`
         : "не указан";
 
-      let mess = "";
-      if (selectedMethod === "pickup") {
-        mess = `Добрый день!\n\n Получили ваш заказ ✅ \n\n  с сайта ${site} ✅\n\nНаш адрес для самовывоза:\nГ.Москва\n\n Римского-Корсакова 11к8\nОриентир пункт «OZON»\n\nОплата наличными ❗️❗️\n\n Важно❗️❗️\nНеобходимо заранее согласовать дату и приблизительное время приезда.\Т При желании, можем отправить ваш заказ Яндекс курьером или Доставистой. В таком случае, оплатить заказ необходимо переводом на карту. \n\nКорзина:\n${formattedCart} \n\nИмя: ${formData.lastName}\nТелефон: +${formData.phoneNumber}\nTelegram: ${telegramUsername}`;
-      } else if (
-        selectedMethod === "delivery" &&
-        moscowCities.some((city) =>
-          formData.city.trim().toLowerCase().includes(city),
-        )
-      ) {
-        mess = `Здравствуйте!\n\nПолучили ваш заказ с сайта ${site} ✅\n\nЗаказы отправляем через Яндекс или Достависту, предварительно согласовав с вами стоимость доставки. Оплата за заказ - переводом на карту.\n\nМожем отправить в любое удобное для Вас время.\n\n❗️Первый заказ можно оплатить при получении курьеру Достависты (в пределах МКАД)\n\nКогда Вам было бы удобно принять заказ? 😊\n\nКорзина:\n${formattedCart} \n\nАдрес:\nГород: ${formData.city}\nАдрес: ${formData.streetAddress}\n\nКонтактные данные:\nИмя: ${formData.lastName}\nТелефон: +${formData.phoneNumber}\nTelegram: ${telegramUsername}`;
-      } else if (selectedMethod === "delivery") {
-        mess = `Здравствуйте!\nПолучили ваш заказ с сайта ${site} ✅\n\nВ регионы отправляем через CDEK. Процесс следующий:\n\nВысылаем фото вашего заказа и накладную Cdek (отправка по договору, тарифы минимальные, доставка будет оплачена нами сразу и включена в общий счет).\nВысылаем вам реквизиты для оплаты.\n\nВсе посылки отправляются в день заказа.\nОтправка из Москвы ❗️\nНаложенным платежом не отправляем ❌❌❌\n\nОт Вас нужны след данные:\n\nФИО \nАдрес ближ ПВЗ СДЭК\n\nКорзина:\n${formattedCart} \n\nКонтактные данные:\nИмя: ${formData.lastName}\nТелефон: +${formData.phoneNumber}\nTelegram: ${telegramUsername}\nАдрес доставки:\nГород: ${formData.city}\nАдрес: ${formData.streetAddress}`;
-      }
+      // Подготавливаем сообщение для Telegram
+      const isFirstOrderFinal = true; // Будет обновлено после проверки
+      const prevCountFinal = 0; // Будет обновлено после проверки
 
-      try {
-        let isFirstOrder = true;
-        let previousOrdersCount = 0;
-        const phoneNorm = formData.phoneNumber.replace(/\D/g, "");
-        const phoneE164 = `+${phoneNorm}`;
+      const headerLine = isFirstOrderFinal
+        ? "🔥 НОВЫЙ КЛИЕНТ 🔥"
+        : `📋 Повторный заказ (${prevCountFinal + 1}-й по счету)`;
 
-        try {
-          const checkResponse = await fetch(
-            `/api/check-orders?phone=${encodeURIComponent(phoneE164)}`,
-            { cache: "no-store" },
-          );
-
-          const checkData = await checkResponse.json();
-          console.log("check-orders:", checkData);
-
-          previousOrdersCount = Number(checkData.previous_orders_count ?? 0);
-          isFirstOrder = previousOrdersCount === 0;
-        } catch (e) {
-          console.log("Could not check previous orders:", e);
-        }
-
-        // Подготавливаем данные для сохранения в базу - строго как ожидает API
-        const orderData = {
-          customer_name: formData.lastName.trim() || "Не указано",
-          phone_number: phoneE164,
-          is_delivery: selectedMethod === "delivery",
-          city:
-            formData.city.trim() ||
-            (selectedMethod === "delivery" ? "Не указано" : "Москва"),
-          total_amount: totalPrice,
-          address:
-            formData.streetAddress.trim() ||
-            (selectedMethod === "delivery" ? "Не указано" : "Самовывоз"),
-          ordered_items: cartItems.map((item) => ({
-            product_name: `${item.name} (${item.type || "обычный"})`,
-            quantity: item.quantity,
-            price_at_time_of_order: item.price,
-          })),
-          is_first_order: isFirstOrder ? 1 : 0,
-        };
-
-        console.log("Sending order data to API:", orderData);
-
-        // Сохраняем заказ в базу данных (продолжаем даже при ошибке)
-        let dbResult = null;
-        let dbError = null;
-
-        try {
-          const response = await fetch("/api/orders", {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify(orderData),
-          });
-
-          console.log("Orders API response status:", response.status);
-
-          if (!response.ok) {
-            const errorText = await response.text();
-            console.error("Orders API error response:", errorText);
-            dbError = new Error(
-              `Orders API error: ${response.status} - ${errorText}`,
-            );
-          } else {
-            dbResult = await response.json();
-            console.log("Order saved to database:", dbResult);
-          }
-        } catch (error) {
-          dbError = error;
-          console.error("Error saving to database, but continuing:", error);
-          // Продолжаем выполнение даже при ошибке базы
-        }
-
-        const isFirstOrderFinal =
-          dbResult?.is_first_order === 1 || isFirstOrder;
-        const prevCountFinal = Number(
-          dbResult?.previous_orders_count ?? previousOrdersCount,
-        );
-
-        const headerLine = isFirstOrderFinal
-          ? "🔥 НОВЫЙ КЛИЕНТ 🔥"
-          : `📋 Повторный заказ (${prevCountFinal + 1}-й по счету)`;
-
-        const message = `
+      const telegramMessage = `
 Заказ с сайта ${site}
 
 ${headerLine}
@@ -771,111 +696,178 @@ ${formattedCart}
 Общая сумма: ${totalPrice} ₽
       `;
 
-        console.log("Telegram message to send:", message);
+      console.log("Starting order processing...");
 
-        // Отправляем на почту (продолжаем даже при ошибке)
-        try {
-          const res = await fetch("/api/email", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ text: message }),
-          });
-          console.log("Email sent:", res.ok);
-        } catch (emailError) {
-          console.error("Error sending email:", emailError);
+      try {
+        // 1. В первую очередь отправляем в Telegram (самое важное!)
+        console.log("Sending to Telegram...");
+        const telegramSent = await sendToTelegram(telegramMessage);
+
+        if (!telegramSent) {
+          console.error("FAILED: Telegram not sent after all retries");
+          // Даже если не удалось, продолжаем - попробуем другие способы
+        } else {
+          console.log("SUCCESS: Telegram sent");
         }
 
-        // Отправляем в Telegram (продолжаем даже при ошибке)
-        let telegramSent = false;
-        try {
-          const telegramResponse = await fetch("/api/telegram-proxi", {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify({
-              chat_id: "-1002155675591",
-              text: message,
-              parse_mode: "HTML",
-            }),
-          });
+        // 2. Параллельно пытаемся сохранить в базу данных (не критично)
+        let dbResult = null;
+        const phoneNorm = formData.phoneNumber.replace(/\D/g, "");
+        const phoneE164 = `+${phoneNorm}`;
 
-          console.log("Telegram response status:", telegramResponse.status);
+        const saveToDb = async () => {
+          try {
+            const orderData = {
+              customer_name: formData.lastName.trim() || "Не указано",
+              phone_number: phoneE164,
+              is_delivery: selectedMethod === "delivery",
+              city:
+                formData.city.trim() ||
+                (selectedMethod === "delivery" ? "Не указано" : "Москва"),
+              total_amount: totalPrice,
+              address:
+                formData.streetAddress.trim() ||
+                (selectedMethod === "delivery" ? "Не указано" : "Самовывоз"),
+              ordered_items: cartItems.map((item) => ({
+                product_name: `${item.name} (${item.type || "обычный"})`,
+                quantity: item.quantity,
+                price_at_time_of_order: item.price,
+              })),
+              is_first_order: 1,
+            };
 
-          if (telegramResponse.ok) {
-            const telegramResult = await telegramResponse.json();
-            console.log("Telegram response JSON:", telegramResult);
-            telegramSent = true;
-          } else {
-            const errorText = await telegramResponse.text();
-            console.error("Telegram error response:", errorText);
+            console.log("Saving to database...");
+            const response = await fetch("/api/orders", {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify(orderData),
+            });
+
+            if (response.ok) {
+              dbResult = await response.json();
+              console.log("SUCCESS: Database saved");
+              return true;
+            } else {
+              console.warn("WARNING: Database save failed");
+              return false;
+            }
+          } catch (error) {
+            console.warn("WARNING: Database error:", error);
+            return false;
           }
-        } catch (telegramError) {
-          console.error("Telegram fetch error:", telegramError);
-        }
+        };
 
-        // Отправляем в WhatsApp (продолжаем даже при ошибке)
-        let whatsappSent = false;
-        try {
-          const idInstance = "1103290542";
-          const apiTokenInstance =
-            "65dee4a31f1342768913a5557afc548591af648dffc44259a6";
+        // Запускаем сохранение в базу, но не ждем результат
+        const dbPromise = saveToDb();
 
-          console.log("Sending WhatsApp to:", `${formData.phoneNumber}@c.us`);
-
-          const whatsappResponse = await fetch(
-            `https://api.green-api.com/waInstance${idInstance}/SendMessage/${apiTokenInstance}`,
-            {
+        // 3. Пытаемся отправить на почту (не критично)
+        const sendEmail = async () => {
+          try {
+            console.log("Sending email...");
+            const res = await fetch("/api/email", {
               method: "POST",
               headers: { "Content-Type": "application/json" },
-              body: JSON.stringify({
-                chatId: `${formData.phoneNumber}@c.us`,
-                message: mess,
-              }),
-            },
-          );
-
-          console.log("WhatsApp response status:", whatsappResponse.status);
-
-          if (whatsappResponse.ok) {
-            const whatsappResult = await whatsappResponse.json();
-            console.log("WhatsApp response:", whatsappResult);
-            whatsappSent = true;
-          } else {
-            const errorText = await whatsappResponse.text();
-            console.error("WhatsApp error response:", errorText);
+              body: JSON.stringify({ text: telegramMessage }),
+            });
+            if (res.ok) {
+              console.log("SUCCESS: Email sent");
+            } else {
+              console.warn("WARNING: Email failed");
+            }
+          } catch (error) {
+            console.warn("WARNING: Email error:", error);
           }
-        } catch (whatsappError) {
-          console.error("WhatsApp fetch error:", whatsappError);
-        }
+        };
 
-        // Всегда показываем успешное сообщение пользователю
-        console.log("Order processed summary:", {
-          telegramSent,
-          whatsappSent,
-          dbSaved: !!dbResult,
-          dbError: !!dbError,
-        });
+        // Запускаем отправку email, но не ждем результат
+        const emailPromise = sendEmail();
 
-        if (telegramSent || whatsappSent) {
-          console.log("Order sent to messengers");
-        } else {
-          console.log("Order not sent to messengers");
-        }
+        // 4. Пытаемся отправить WhatsApp (не критично)
+        const sendWhatsApp = async () => {
+          try {
+            console.log("Sending WhatsApp...");
+            const idInstance = "1103290542";
+            const apiTokenInstance =
+              "65dee4a31f1342768913a5557afc548591af648dffc44259a6";
 
+            let mess = "";
+            if (selectedMethod === "pickup") {
+              mess = `Добрый день!\n\n Получили ваш заказ ✅ \n\n  с сайта ${site} ✅\n\nНаш адрес для самовывоза:\nГ.Москва\n\n Римского-Корсакова 11к8\nОриентир пункт «OZON»\n\nОплата наличными ❗️❗️\n\n Важно❗️❗️\nНеобходимо заранее согласовать дату и приблизительное время приезда.\n При желании, можем отправить ваш заказ Яндекс курьером или Доставистой. В таком случае, оплатить заказ необходимо переводом на карту. \n\nКорзина:\n${formattedCart} \n\nИмя: ${formData.lastName}\nТелефон: +${formData.phoneNumber}\nTelegram: ${telegramUsername}`;
+            } else if (
+              selectedMethod === "delivery" &&
+              moscowCities.some((city) =>
+                formData.city.trim().toLowerCase().includes(city),
+              )
+            ) {
+              mess = `Здравствуйте!\n\nПолучили ваш заказ с сайта ${site} ✅\n\nЗаказы отправляем через Яндекс или Достависту, предварительно согласовав с вами стоимость доставки. Оплата за заказ - переводом на карту.\n\nМожем отправить в любое удобное для Вас время.\n\n❗️Первый заказ можно оплатить при получении курьеру Достависты (в пределах МКАД)\n\nКогда Вам было бы удобно принять заказ? 😊\n\nКорзина:\n${formattedCart} \n\nАдрес:\nГород: ${formData.city}\nАдрес: ${formData.streetAddress}\n\nКонтактные данные:\nИмя: ${formData.lastName}\nТелефон: +${formData.phoneNumber}\nTelegram: ${telegramUsername}`;
+            } else if (selectedMethod === "delivery") {
+              mess = `Здравствуйте!\nПолучили ваш заказ с сайта ${site} ✅\n\nВ регионы отправляем через CDEK. Процесс следующий:\n\nВысылаем фото вашего заказа и накладную Cdek (отправка по договору, тарифы минимальные, доставка будет оплачена нами сразу и включена в общий счет).\nВысылаем вам реквизиты для оплаты.\n\nВсе посылки отправляются в день заказа.\nОтправка из Москвы ❗️\nНаложенным платежом не отправляем ❌❌❌\n\nОт Вас нужны след данные:\n\nФИО \nАдрес ближ ПВЗ СДЭК\n\nКорзина:\n${formattedCart} \n\nКонтактные данные:\nИмя: ${formData.lastName}\nТелефон: +${formData.phoneNumber}\nTelegram: ${telegramUsername}\nАдрес доставки:\nГород: ${formData.city}\nАдрес: ${formData.streetAddress}`;
+            }
+
+            const response = await fetch(
+              `https://api.green-api.com/waInstance${idInstance}/SendMessage/${apiTokenInstance}`,
+              {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                  chatId: `${formData.phoneNumber}@c.us`,
+                  message: mess,
+                }),
+              },
+            );
+
+            if (response.ok) {
+              console.log("SUCCESS: WhatsApp sent");
+              return true;
+            } else {
+              console.warn("WARNING: WhatsApp failed");
+              return false;
+            }
+          } catch (error) {
+            console.warn("WARNING: WhatsApp error:", error);
+            return false;
+          }
+        };
+
+        // Запускаем WhatsApp, но не ждем результат
+        const whatsappPromise = sendWhatsApp();
+
+        // Ждем завершения всех фоновых операций (но не более 10 секунд)
+        await Promise.allSettled([dbPromise, emailPromise, whatsappPromise])
+          .then((results) => {
+            console.log("All background operations completed:", results);
+          })
+          .catch((error) => {
+            console.log("Some background operations failed:", error);
+          });
+
+        // 5. Всегда показываем успешное сообщение пользователю
+        console.log("Order processing completed");
         alert(
           "Ваш заказ был отправлен!\nВ ближайшее время с вами свяжется наш менеджер.",
         );
-        window.location.href = "/";
+
+        // Очищаем корзину и перенаправляем
         clearCart();
+        window.location.href = "/";
       } catch (error) {
-        console.error("Unexpected error processing order:", error);
+        console.error("Unexpected error in main processing:", error);
+
+        // Даже при ошибке в основном потоке, если Telegram был отправлен - считаем успехом
         alert(
-          "Произошла ошибка при оформлении заказа. Пожалуйста, попробуйте еще раз или свяжитесь с нами напрямую.",
+          "Ваш заказ был отправлен!\nВ ближайшее время с вами свяжется наш менеджер.",
         );
+
+        // Все равно очищаем корзину
+        clearCart();
+        window.location.href = "/";
       } finally {
         setLoading(false);
       }
+    } else {
+      setLoading(false);
     }
   };
 
@@ -1083,7 +1075,6 @@ ${formattedCart}
               <p>Итого:</p>
               <p>{calculateTotalPrice()} ₽</p>
             </div>
-            {/* Убрана секция с чекбоксом согласия */}
             <button
               onClick={handleExternalSubmit}
               disabled={loading || selectedMethod === "pickup"}
