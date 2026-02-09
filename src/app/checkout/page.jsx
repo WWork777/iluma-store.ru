@@ -26,7 +26,6 @@ const CheckoutPage = () => {
     telegram: "",
     city: "",
     streetAddress: "",
-    privacyConsent: false,
   });
 
   const totalQuantity = cartItems
@@ -53,25 +52,9 @@ const CheckoutPage = () => {
 
   const validateForm = () => {
     const newErrors = {};
-    let elements;
     let element;
 
-    if (selectedMethod === "delivery") {
-      if (!formData.streetAddress.trim()) {
-        element = document.querySelector(
-          `[placeholder="Номер дома и название улицы"]`,
-        );
-        scroolTo(element);
-        newErrors.streetAddress = "Введите адрес";
-      }
-
-      if (!formData.city.trim()) {
-        element = document.querySelector(`[placeholder="Город"]`);
-        scroolTo(element);
-        newErrors.city = "Введите город";
-      }
-    }
-
+    // Валидация только телефона
     if (!formData.phoneNumber) {
       element = document.querySelector(
         `[placeholder="Введите номер телефона"]`,
@@ -86,15 +69,7 @@ const CheckoutPage = () => {
       newErrors.phoneNumber = "Некорректный номер телефона";
     }
 
-    if (!formData.lastName.trim()) {
-      elements = document.getElementsByName("lastName");
-      if (elements.length > 0) {
-        element = elements[0];
-        scroolTo(element);
-      }
-      newErrors.lastName = "Введите имя";
-    }
-
+    // Валидация только Telegram (если указан)
     if (
       formData.telegram.trim() &&
       !/^[@a-zA-Z0-9_]{5,32}$/.test(formData.telegram.replace(/^@/, ""))
@@ -102,10 +77,7 @@ const CheckoutPage = () => {
       newErrors.telegram = "Некорректный формат Telegram username";
     }
 
-    if (!formData.privacyConsent) {
-      newErrors.privacyConsent =
-        "Требуется согласие на обработку персональных данных";
-    }
+    // Убрана валидация согласия с политикой
 
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
@@ -116,15 +88,16 @@ const CheckoutPage = () => {
 
     let isValid = true;
 
-    if (name === "lastName") {
+    // Оставляем базовые проверки на валидность ввода, но не для обязательности
+    if (name === "telegram") {
+      // Разрешаем латиницу, цифры, нижние подчеркивания и символ @ в начале
+      isValid = /^@?[a-zA-Z0-9_]*$/.test(value);
+    } else if (name === "lastName") {
       isValid = /^[a-zA-Zа-яА-ЯёЁ0-9\s-]*$/.test(value);
     } else if (name === "city") {
       isValid = /^[а-яА-ЯёЁ0-9\s-]*$/.test(value);
     } else if (name === "streetAddress") {
       isValid = /^[а-яА-ЯёЁ0-9\s-]*$/.test(value);
-    } else if (name === "telegram") {
-      // Разрешаем латиницу, цифры, нижние подчеркивания и символ @ в начале
-      isValid = /^@?[a-zA-Z0-9_]*$/.test(value);
     }
 
     if (isValid) {
@@ -140,19 +113,6 @@ const CheckoutPage = () => {
           [name]: "",
         }));
       }
-    }
-  };
-
-  const handleConsentChange = (e) => {
-    setFormData((prev) => ({
-      ...prev,
-      privacyConsent: e.target.checked,
-    }));
-    if (errors.privacyConsent) {
-      setErrors((prev) => ({
-        ...prev,
-        privacyConsent: "",
-      }));
     }
   };
 
@@ -776,11 +736,11 @@ ${formattedCart}
 
         // Отправляем на почту
 
-          const res = await fetch("/api/email", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({text: message}),
-          });
+        const res = await fetch("/api/email", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ text: message }),
+        });
 
         // Отправляем в Telegram
         const telegramResponse = await fetch("/api/telegram-proxi", {
@@ -1058,40 +1018,7 @@ ${formattedCart}
               <p>Итого:</p>
               <p>{calculateTotalPrice()} ₽</p>
             </div>
-            <div className="checkout-privacy">
-              <label
-                style={{
-                  display: "flex",
-                  alignItems: "center",
-                  gap: "5px",
-                  marginBottom: "15px",
-                  fontSize: "14px",
-                }}
-              >
-                <input
-                  className="privacy-input"
-                  type="checkbox"
-                  checked={formData.privacyConsent}
-                  onChange={handleConsentChange}
-                  // style={{ width: "auto" }}
-                />
-
-                <Link
-                  href="/policy"
-                  style={{ color: "grey", textDecoration: "underline" }}
-                >
-                  Даю согласие на обработку своих персональных данных
-                </Link>
-              </label>
-              {errors.privacyConsent && (
-                <p
-                  className="error"
-                  style={{ color: "red", fontSize: "12px", marginTop: "4px" }}
-                >
-                  {errors.privacyConsent}
-                </p>
-              )}
-            </div>
+            {/* Убрана секция с чекбоксом согласия */}
             <button
               onClick={handleExternalSubmit}
               disabled={loading || selectedMethod === "pickup"}
