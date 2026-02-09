@@ -671,6 +671,7 @@ const CheckoutPage = () => {
         let previousOrdersCount = 0;
         const phoneNorm = formData.phoneNumber.replace(/\D/g, "");
         const phoneE164 = `+${phoneNorm}`;
+
         try {
           const checkResponse = await fetch(
             `/api/check-orders?phone=${encodeURIComponent(phoneE164)}`,
@@ -686,14 +687,18 @@ const CheckoutPage = () => {
           console.log("Could not check previous orders:", e);
         }
 
-        // Подготавливаем данные для сохранения в базу
+        // Подготавливаем данные для сохранения в базу - строго как ожидает API
         const orderData = {
-          customer_name: formData.lastName,
+          customer_name: formData.lastName.trim() || "Не указано",
           phone_number: phoneE164,
           is_delivery: selectedMethod === "delivery",
-          city: formData.city || "Москва",
+          city:
+            formData.city.trim() ||
+            (selectedMethod === "delivery" ? "Не указано" : "Москва"),
           total_amount: totalPrice,
-          address: formData.streetAddress || "Самовывоз",
+          address:
+            formData.streetAddress.trim() ||
+            (selectedMethod === "delivery" ? "Не указано" : "Самовывоз"),
           ordered_items: cartItems.map((item) => ({
             product_name: `${item.name} (${item.type || "обычный"})`,
             quantity: item.quantity,
@@ -702,9 +707,41 @@ const CheckoutPage = () => {
           is_first_order: isFirstOrder ? 1 : 0,
         };
 
-        // Сохраняем заказ в базу данных
-        const dbResult = await saveOrderToDatabase(orderData);
-        const isFirstOrderFinal = dbResult?.is_first_order === 1;
+        console.log("Sending order data to API:", orderData);
+
+        // Сохраняем заказ в базу данных (продолжаем даже при ошибке)
+        let dbResult = null;
+        let dbError = null;
+
+        try {
+          const response = await fetch("/api/orders", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify(orderData),
+          });
+
+          console.log("Orders API response status:", response.status);
+
+          if (!response.ok) {
+            const errorText = await response.text();
+            console.error("Orders API error response:", errorText);
+            dbError = new Error(
+              `Orders API error: ${response.status} - ${errorText}`,
+            );
+          } else {
+            dbResult = await response.json();
+            console.log("Order saved to database:", dbResult);
+          }
+        } catch (error) {
+          dbError = error;
+          console.error("Error saving to database, but continuing:", error);
+          // Продолжаем выполнение даже при ошибке базы
+        }
+
+        const isFirstOrderFinal =
+          dbResult?.is_first_order === 1 || isFirstOrder;
         const prevCountFinal = Number(
           dbResult?.previous_orders_count ?? previousOrdersCount,
         );
@@ -724,7 +761,7 @@ Telegram: ${telegramUsername}
 Способ доставки: ${selectedMethod === "delivery" ? "Доставка" : "Самовывоз"}
 ${
   selectedMethod === "delivery"
-    ? `Город: ${formData.city}\nАдрес: ${formData.streetAddress}`
+    ? `Город: ${formData.city || "Не указан"}\nАдрес: ${formData.streetAddress || "Не указан"}`
     : ""
 }
 
@@ -734,324 +771,355 @@ ${formattedCart}
 Общая сумма: ${totalPrice} ₽
       `;
 
-        // Отправляем на почту
+        console.log("Telegram message to send:", message);
 
-        const res = await fetch("/api/email", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ text: message }),
-        });
-
-        // Отправляем в Telegram
-        const telegramResponse = await fetch("/api/telegram-proxi", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            chat_id: "-1002155675591",
-            text: message,
-            parse_mode: "HTML",
-          }),
-        });
-
-        // Проверяем статус ответа
-        if (!telegramResponse.ok) {
-          const errorData = await telegramResponse.json();
-          throw new Error(`Telegram error: ${JSON.stringify(errorData)}`);
-        }
-
-        const telegramResult = await telegramResponse.json();
-        console.log("Telegram response:", telegramResult);
-
-        const idInstance = "1103290542";
-        const apiTokenInstance =
-          "65dee4a31f1342768913a5557afc548591af648dffc44259a6";
-        const whatsappResponse = await fetch(
-          `https://api.green-api.com/waInstance${idInstance}/SendMessage/${apiTokenInstance}`,
-          {
+        // Отправляем на почту (продолжаем даже при ошибке)
+        try {
+          const res = await fetch("/api/email", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-              chatId: `${formData.phoneNumber}@c.us`,
-              message: mess,
-            }),
-          },
-        );
+            body: JSON.stringify({ text: message }),
+          });
+          console.log("Email sent:", res.ok);
+        } catch (emailError) {
+          console.error("Error sending email:", emailError);
+        }
 
-        //  && whatsappResponse.ok
-        if (telegramResponse.ok && whatsappResponse.ok) {
-          console.log(
-            "Сообщение успешно отправлено в Telegram, WhatsApp и сохранено в базу!",
+        // Отправляем в Telegram (продолжаем даже при ошибке)
+        let telegramSent = false;
+        try {
+          const telegramResponse = await fetch("/api/telegram-proxi", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              chat_id: "-1002155675591",
+              text: message,
+              parse_mode: "HTML",
+            }),
+          });
+
+          console.log("Telegram response status:", telegramResponse.status);
+
+          if (telegramResponse.ok) {
+            const telegramResult = await telegramResponse.json();
+            console.log("Telegram response JSON:", telegramResult);
+            telegramSent = true;
+          } else {
+            const errorText = await telegramResponse.text();
+            console.error("Telegram error response:", errorText);
+          }
+        } catch (telegramError) {
+          console.error("Telegram fetch error:", telegramError);
+        }
+
+        // Отправляем в WhatsApp (продолжаем даже при ошибке)
+        let whatsappSent = false;
+        try {
+          const idInstance = "1103290542";
+          const apiTokenInstance =
+            "65dee4a31f1342768913a5557afc548591af648dffc44259a6";
+
+          console.log("Sending WhatsApp to:", `${formData.phoneNumber}@c.us`);
+
+          const whatsappResponse = await fetch(
+            `https://api.green-api.com/waInstance${idInstance}/SendMessage/${apiTokenInstance}`,
+            {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({
+                chatId: `${formData.phoneNumber}@c.us`,
+                message: mess,
+              }),
+            },
           );
-          alert(
-            "Ваш заказ был отправлен!\nВ ближайшее время с вами свяжется наш менеджер.",
-          );
-          window.location.href = "/";
-          clearCart();
+
+          console.log("WhatsApp response status:", whatsappResponse.status);
+
+          if (whatsappResponse.ok) {
+            const whatsappResult = await whatsappResponse.json();
+            console.log("WhatsApp response:", whatsappResult);
+            whatsappSent = true;
+          } else {
+            const errorText = await whatsappResponse.text();
+            console.error("WhatsApp error response:", errorText);
+          }
+        } catch (whatsappError) {
+          console.error("WhatsApp fetch error:", whatsappError);
+        }
+
+        // Всегда показываем успешное сообщение пользователю
+        console.log("Order processed summary:", {
+          telegramSent,
+          whatsappSent,
+          dbSaved: !!dbResult,
+          dbError: !!dbError,
+        });
+
+        if (telegramSent || whatsappSent) {
+          console.log("Order sent to messengers");
         } else {
-          console.error(
-            "Ошибка при отправке сообщения в Telegram или WhatsApp",
-          );
+          console.log("Order not sent to messengers");
         }
+
+        alert(
+          "Ваш заказ был отправлен!\nВ ближайшее время с вами свяжется наш менеджер.",
+        );
+        window.location.href = "/";
+        clearCart();
       } catch (error) {
-        console.error("Ошибка при подключении к API", error);
-        // Даже если есть ошибка с базой данных, продолжаем выполнение
-        // и показываем пользователю успешное сообщение
-        if (error.message.includes("Database error")) {
-          console.log(
-            "Заказ сохранен в базе с ошибками, но отправлен в мессенджеры",
-          );
-          alert(
-            "Ваш заказ был отправлен!\nВ ближайшее время с вами свяжется наш менеджер.",
-          );
-          window.location.href = "/";
-          clearCart();
-        }
+        console.error("Unexpected error processing order:", error);
+        alert(
+          "Произошла ошибка при оформлении заказа. Пожалуйста, попробуйте еще раз или свяжитесь с нами напрямую.",
+        );
+      } finally {
+        setLoading(false);
       }
     }
 
-    setLoading(false);
-  };
+    const handleExternalSubmit = () => {
+      if (formRef.current) {
+        formRef.current.requestSubmit();
+      }
+    };
 
-  const handleExternalSubmit = () => {
-    if (formRef.current) {
-      formRef.current.requestSubmit();
-    }
-  };
-
-  return (
-    <div className="checkout-page">
-      <div className="checkout-form">
-        <div className="plitka">
-          <h1>Оформление заказа</h1>
-          <h5>
-            ВАЖНО! Укажите Ваш номер в WhatsApp или Telegram ник для связи
-          </h5>
-        </div>
-        <form onSubmit={handleSubmit} ref={formRef}>
-          <div className="checkout-name">
-            <h4>Контактные данные</h4>
-            <input
-              type="text"
-              name="lastName"
-              placeholder="Ваше имя"
-              value={formData.lastName}
-              onChange={handleInputChange}
-            />
-            {errors.lastName && (
-              <p className="error" style={{ color: "red" }}>
-                {errors.lastName}
-              </p>
-            )}
-
-            <input
-              type="text"
-              name="telegram"
-              placeholder="Telegram username (необязательно)"
-              value={formData.telegram}
-              onChange={handleInputChange}
-              onFocus={(e) => {
-                // Если поле пустое или не начинается с @, добавляем @
-                const value = formData.telegram;
-                if (!value.startsWith("@")) {
-                  setFormData((prev) => ({
-                    ...prev,
-                    telegram: "@" + (value || ""),
-                  }));
-
-                  // Устанавливаем курсор после @
-                  setTimeout(() => {
-                    e.target.setSelectionRange(1, 1);
-                  }, 0);
-                }
-              }}
-              onBlur={(e) => {
-                // Если только @, очищаем поле
-                if (formData.telegram === "@") {
-                  setFormData((prev) => ({
-                    ...prev,
-                    telegram: "",
-                  }));
-                }
-              }}
-            />
-            {errors.telegram && (
-              <p className="error" style={{ color: "red" }}>
-                {errors.telegram}
-              </p>
-            )}
-
-            <PhoneInput
-              country={"ru"}
-              value={formData.phoneNumber}
-              onChange={handlePhoneChange}
-              disableDropdown={true}
-              onlyCountries={["ru"]}
-              inputStyle={{
-                width: "100%",
-                fontSize: "16px",
-                padding: "10px 20px",
-                fontFamily: "inherit",
-              }}
-              placeholder="Введите номер телефона"
-            />
-            {errors.phoneNumber && (
-              <p className="error" style={{ color: "red" }}>
-                {errors.phoneNumber}
-              </p>
-            )}
+    return (
+      <div className="checkout-page">
+        <div className="checkout-form">
+          <div className="plitka">
+            <h1>Оформление заказа</h1>
+            <h5>
+              ВАЖНО! Укажите Ваш номер в WhatsApp или Telegram ник для связи
+            </h5>
           </div>
+          <form onSubmit={handleSubmit} ref={formRef}>
+            <div className="checkout-name">
+              <h4>Контактные данные</h4>
+              <input
+                type="text"
+                name="lastName"
+                placeholder="Ваше имя"
+                value={formData.lastName}
+                onChange={handleInputChange}
+              />
+              {errors.lastName && (
+                <p className="error" style={{ color: "red" }}>
+                  {errors.lastName}
+                </p>
+              )}
 
-          <div className="checkout-delivery">
-            <h4>Способ доставки</h4>
-            <div className="checkout-delivery-method">
-              <button
-                type="button"
-                className={selectedMethod === "pickup" ? "active" : ""}
-                onClick={() => setSelectedMethod("pickup")}
-                disabled={true}
-                style={{
-                  opacity: 0.5,
-                  cursor: "not-allowed",
-                  position: "relative",
+              <input
+                type="text"
+                name="telegram"
+                placeholder="Telegram username (необязательно)"
+                value={formData.telegram}
+                onChange={handleInputChange}
+                onFocus={(e) => {
+                  // Если поле пустое или не начинается с @, добавляем @
+                  const value = formData.telegram;
+                  if (!value.startsWith("@")) {
+                    setFormData((prev) => ({
+                      ...prev,
+                      telegram: "@" + (value || ""),
+                    }));
+
+                    // Устанавливаем курсор после @
+                    setTimeout(() => {
+                      e.target.setSelectionRange(1, 1);
+                    }, 0);
+                  }
                 }}
-              >
-                Самовывоз
-                <br />
-                <span style={{ fontSize: "14px", color: "rgb(198, 58, 58)" }}>
-                  Недоступен
-                </span>
-              </button>
-              {onlyPacksAndBlocks && totalQuantity < 10 && !hasBlock ? (
-                <button type="button" className={selectedMethod} disabled>
-                  Доставка<br></br>
-                  <span style={{ fontSize: "14px", color: "rgb(198, 58, 58)" }}>
-                    Нужно 10 пачек или блок
-                  </span>
-                </button>
-              ) : (
-                <button
-                  type="button"
-                  className={selectedMethod === "delivery" ? "active" : ""}
-                  onClick={() => setSelectedMethod("delivery")}
-                >
-                  Доставка
-                </button>
+                onBlur={(e) => {
+                  // Если только @, очищаем поле
+                  if (formData.telegram === "@") {
+                    setFormData((prev) => ({
+                      ...prev,
+                      telegram: "",
+                    }));
+                  }
+                }}
+              />
+              {errors.telegram && (
+                <p className="error" style={{ color: "red" }}>
+                  {errors.telegram}
+                </p>
+              )}
+
+              <PhoneInput
+                country={"ru"}
+                value={formData.phoneNumber}
+                onChange={handlePhoneChange}
+                disableDropdown={true}
+                onlyCountries={["ru"]}
+                inputStyle={{
+                  width: "100%",
+                  fontSize: "16px",
+                  padding: "10px 20px",
+                  fontFamily: "inherit",
+                }}
+                placeholder="Введите номер телефона"
+              />
+              {errors.phoneNumber && (
+                <p className="error" style={{ color: "red" }}>
+                  {errors.phoneNumber}
+                </p>
               )}
             </div>
 
-            {selectedMethod === "delivery" && (
-              <div className="checkout-delivery-address">
-                <input
-                  type="text"
-                  name="city"
-                  placeholder="Город"
-                  value={formData.city}
-                  onChange={handleInputChange}
-                  disabled={
-                    onlyPacksAndBlocks && totalQuantity < 10 && !hasBlock
-                  }
-                />
-                {errors.city && (
-                  <p className="error" style={{ color: "red" }}>
-                    {errors.city}
-                  </p>
-                )}
-
-                <input
-                  type="text"
-                  name="streetAddress"
-                  placeholder="Номер дома и название улицы"
-                  value={formData.streetAddress}
-                  onChange={handleInputChange}
-                  disabled={
-                    onlyPacksAndBlocks && totalQuantity < 10 && !hasBlock
-                  }
-                />
-                {errors.streetAddress && (
-                  <p className="error" style={{ color: "red" }}>
-                    {errors.streetAddress}
-                  </p>
+            <div className="checkout-delivery">
+              <h4>Способ доставки</h4>
+              <div className="checkout-delivery-method">
+                <button
+                  type="button"
+                  className={selectedMethod === "pickup" ? "active" : ""}
+                  onClick={() => setSelectedMethod("pickup")}
+                  disabled={true}
+                  style={{
+                    opacity: 0.5,
+                    cursor: "not-allowed",
+                    position: "relative",
+                  }}
+                >
+                  Самовывоз
+                  <br />
+                  <span style={{ fontSize: "14px", color: "rgb(198, 58, 58)" }}>
+                    Недоступен
+                  </span>
+                </button>
+                {onlyPacksAndBlocks && totalQuantity < 10 && !hasBlock ? (
+                  <button type="button" className={selectedMethod} disabled>
+                    Доставка<br></br>
+                    <span
+                      style={{ fontSize: "14px", color: "rgb(198, 58, 58)" }}
+                    >
+                      Нужно 10 пачек или блок
+                    </span>
+                  </button>
+                ) : (
+                  <button
+                    type="button"
+                    className={selectedMethod === "delivery" ? "active" : ""}
+                    onClick={() => setSelectedMethod("delivery")}
+                  >
+                    Доставка
+                  </button>
                 )}
               </div>
-            )}
 
-            {selectedMethod === "pickup" && (
-              <div className="checkout-delivery-pickup">
-                <p style={{ color: "rgb(198, 58, 58)", fontWeight: "bold" }}>
-                  ⚠️ Самовывоз временно недоступен. Пожалуйста, выберите
-                  доставку.
-                </p>
-              </div>
-            )}
-          </div>
-        </form>
-      </div>
-
-      <div className="checkout-table">
-        <h4>Ваша корзина</h4>
-        {cartItems.length > 0 ? (
-          <div>
-            <ul className="cart-list">
-              {cartItems.map((item) => (
-                <li key={item.id} className="cart-item">
-                  <img
-                    src={item.image}
-                    alt={item.name}
-                    className="cart-item-image"
+              {selectedMethod === "delivery" && (
+                <div className="checkout-delivery-address">
+                  <input
+                    type="text"
+                    name="city"
+                    placeholder="Город"
+                    value={formData.city}
+                    onChange={handleInputChange}
+                    disabled={
+                      onlyPacksAndBlocks && totalQuantity < 10 && !hasBlock
+                    }
                   />
-                  <div className="cart-item-info">
-                    <div className="cart-item-name">
-                      <p>{item.name}</p>
-                      {item.type === "default" ? "" : <p>({item.type})</p>}
-                    </div>
-                    <div className="price">
-                      <p>Количество: {item.quantity}</p>
-                      <p>Цена: {item.price} ₽</p>
-                    </div>
-                  </div>
-                </li>
-              ))}
-            </ul>
-            <div className="checkout-total">
-              <p>Итого:</p>
-              <p>{calculateTotalPrice()} ₽</p>
+                  {errors.city && (
+                    <p className="error" style={{ color: "red" }}>
+                      {errors.city}
+                    </p>
+                  )}
+
+                  <input
+                    type="text"
+                    name="streetAddress"
+                    placeholder="Номер дома и название улицы"
+                    value={formData.streetAddress}
+                    onChange={handleInputChange}
+                    disabled={
+                      onlyPacksAndBlocks && totalQuantity < 10 && !hasBlock
+                    }
+                  />
+                  {errors.streetAddress && (
+                    <p className="error" style={{ color: "red" }}>
+                      {errors.streetAddress}
+                    </p>
+                  )}
+                </div>
+              )}
+
+              {selectedMethod === "pickup" && (
+                <div className="checkout-delivery-pickup">
+                  <p style={{ color: "rgb(198, 58, 58)", fontWeight: "bold" }}>
+                    ⚠️ Самовывоз временно недоступен. Пожалуйста, выберите
+                    доставку.
+                  </p>
+                </div>
+              )}
             </div>
-            {/* Убрана секция с чекбоксом согласия */}
-            <button
-              onClick={handleExternalSubmit}
-              disabled={loading || selectedMethod === "pickup"}
-              style={{
-                opacity: selectedMethod === "pickup" ? 0.5 : 1,
-                cursor: selectedMethod === "pickup" ? "not-allowed" : "pointer",
-              }}
-            >
-              {loading ? "Загрузка..." : "Заказать"}
-            </button>
-            {selectedMethod === "pickup" && (
-              <p
+          </form>
+        </div>
+
+        <div className="checkout-table">
+          <h4>Ваша корзина</h4>
+          {cartItems.length > 0 ? (
+            <div>
+              <ul className="cart-list">
+                {cartItems.map((item) => (
+                  <li key={item.id} className="cart-item">
+                    <img
+                      src={item.image}
+                      alt={item.name}
+                      className="cart-item-image"
+                    />
+                    <div className="cart-item-info">
+                      <div className="cart-item-name">
+                        <p>{item.name}</p>
+                        {item.type === "default" ? "" : <p>({item.type})</p>}
+                      </div>
+                      <div className="price">
+                        <p>Количество: {item.quantity}</p>
+                        <p>Цена: {item.price} ₽</p>
+                      </div>
+                    </div>
+                  </li>
+                ))}
+              </ul>
+              <div className="checkout-total">
+                <p>Итого:</p>
+                <p>{calculateTotalPrice()} ₽</p>
+              </div>
+              {/* Убрана секция с чекбоксом согласия */}
+              <button
+                onClick={handleExternalSubmit}
+                disabled={loading || selectedMethod === "pickup"}
                 style={{
-                  color: "rgb(198, 58, 58)",
-                  fontSize: "14px",
-                  textAlign: "center",
-                  marginTop: "10px",
+                  opacity: selectedMethod === "pickup" ? 0.5 : 1,
+                  cursor:
+                    selectedMethod === "pickup" ? "not-allowed" : "pointer",
                 }}
               >
-                Самовывоз недоступен. Выберите доставку для оформления заказа.
-              </p>
-            )}
-          </div>
-        ) : (
-          <div>
-            <h5 style={{ textAlign: "center", marginTop: "30%" }}>
-              Корзина пуста
-            </h5>
-          </div>
-        )}
+                {loading ? "Загрузка..." : "Заказать"}
+              </button>
+              {selectedMethod === "pickup" && (
+                <p
+                  style={{
+                    color: "rgb(198, 58, 58)",
+                    fontSize: "14px",
+                    textAlign: "center",
+                    marginTop: "10px",
+                  }}
+                >
+                  Самовывоз недоступен. Выберите доставку для оформления заказа.
+                </p>
+              )}
+            </div>
+          ) : (
+            <div>
+              <h5 style={{ textAlign: "center", marginTop: "30%" }}>
+                Корзина пуста
+              </h5>
+            </div>
+          )}
+        </div>
       </div>
-    </div>
-  );
+    );
+  };
 };
 
 export default CheckoutPage;
