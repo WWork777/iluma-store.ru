@@ -54,7 +54,7 @@ const CheckoutPage = () => {
     const newErrors = {};
     let element;
 
-    // Валидация только телефона
+    // Валидация телефона
     if (!formData.phoneNumber) {
       element = document.querySelector(
         `[placeholder="Введите номер телефона"]`,
@@ -69,7 +69,21 @@ const CheckoutPage = () => {
       newErrors.phoneNumber = "Некорректный номер телефона";
     }
 
-    // Валидация только Telegram (если указан)
+    // Валидация города для доставки
+    if (selectedMethod === "delivery") {
+      if (!formData.city.trim()) {
+        element = document.querySelector(`[name="city"]`);
+        scroolTo(element);
+        newErrors.city = "Введите ваш город";
+      } else if (!/^[a-zA-Zа-яА-ЯёЁ0-9\s-]+$/.test(formData.city)) {
+        element = document.querySelector(`[name="city"]`);
+        scroolTo(element);
+        newErrors.city =
+          "Город может содержать только буквы, цифры, пробелы и дефисы";
+      }
+    }
+
+    // Валидация Telegram (если указан)
     if (
       formData.telegram.trim() &&
       !/^[@a-zA-Z0-9_]{5,32}$/.test(formData.telegram.replace(/^@/, ""))
@@ -91,7 +105,7 @@ const CheckoutPage = () => {
     } else if (name === "lastName") {
       isValid = /^[a-zA-Zа-яА-ЯёЁ0-9\s-]*$/.test(value);
     } else if (name === "city") {
-      isValid = /^[а-яА-ЯёЁ0-9\s-]*$/.test(value);
+      isValid = /^[a-zA-Zа-яА-ЯёЁ0-9\s-]*$/.test(value); // Добавлены английские буквы
     } else if (name === "streetAddress") {
       isValid = /^[а-яА-ЯёЁ0-9\s-]*$/.test(value);
     }
@@ -1083,21 +1097,31 @@ ${formattedCart}
 
             {selectedMethod === "delivery" && (
               <div className="checkout-delivery-address">
-                <input
-                  type="text"
-                  name="city"
-                  placeholder="Город"
-                  value={formData.city}
-                  onChange={handleInputChange}
-                  disabled={
-                    onlyPacksAndBlocks && totalQuantity < 10 && !hasBlock
-                  }
-                />
-                {errors.city && (
-                  <p className="error" style={{ color: "red" }}>
-                    {errors.city}
-                  </p>
-                )}
+                <div style={{ position: "relative", width: "100%" }}>
+                  <input
+                    type="text"
+                    name="city"
+                    placeholder="Город *"
+                    value={formData.city}
+                    onChange={handleInputChange}
+                    disabled={
+                      onlyPacksAndBlocks && totalQuantity < 10 && !hasBlock
+                    }
+                  />
+                  {errors.city && (
+                    <p
+                      style={{
+                        color: "red",
+                        fontSize: "14px",
+                        marginTop: "5px",
+                        marginBottom: "0",
+                        fontWeight: "500",
+                      }}
+                    >
+                      {errors.city}
+                    </p>
+                  )}
+                </div>
 
                 <input
                   type="text"
