@@ -63,7 +63,7 @@ export default function Header() {
             height={100}
           />
           <div className="name">
-            <span>IlumaStore</span>
+            <span>ИлюмаСтор</span>
           </div>
         </Link>
         <div className="menu">
@@ -221,7 +221,7 @@ export default function Header() {
                 height={100}
               />
               <div className="name">
-                <span>IlumaStore</span>
+                <span>ИлюмаСтор</span>
               </div>
             </div>
             <Link
