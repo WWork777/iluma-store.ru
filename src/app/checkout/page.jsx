@@ -429,7 +429,6 @@ ${formattedCart}
 Телефон: +${formData.phoneNumber}
 Telegram: ${telegramUsername}
 
-📍 Способ получения: ${selectedMethod === "delivery" ? "Доставка" : "Самовывоз"}
 ${selectedMethod === "delivery" ? `🏙 Город: ${formData.city || "Не указан"}` : ""}`;
 
             // Объединяем автоответ с информацией о заказе

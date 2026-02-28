@@ -1,5 +1,29 @@
 @import '/public/const.scss';
 
+.warning {
+  font-size: 14px;
+  color: white;
+  position: relative; /* Нужно для позиционирования псевдоэлемента */
+  width: 100%;
+  display: inline-block; /* Или block, чтобы линия была на всю ширину текста/блока */
+  margin-bottom: 15px;
+  font-weight: bold;
+
+  @media (max-width: 430px) {
+    font-size: 12px;
+  }
+}
+
+.warning::after {
+  position: absolute;
+  content: "";
+  width: 100%;
+  height: 1px;
+  background-color: white;
+  bottom: -5px; /* <-- Прижимаем линию к нижнему краю родителя */
+  left: 0; /* Выравниваем по левому краю */
+}
+
 .spinner {
     border: 4px solid #bbbaba; 
     border-top: 4px solid #ffffff; 

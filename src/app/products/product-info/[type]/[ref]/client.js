@@ -72,6 +72,12 @@ export default function ClientFilters({ items: initialItems }) {
         <div className="product-details__content">
           <div className="product-details__text-main">
             <h1>{product.name}</h1>
+            <span className="warning">
+              Дистанционная розничная продажа (Доставка) данного товара не
+              осуществляется. Информация не является публичной офертой. Вы
+              можете оформить бронирование и приобрести данный товар в
+              стационарном магазине.
+            </span>
             <p
               dangerouslySetInnerHTML={{
                 __html: product.description.replace(/\n/g, "<br>"),
