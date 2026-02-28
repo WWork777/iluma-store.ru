@@ -8,7 +8,7 @@ export default function Preview() {
       <div className="preview-card preview-column-one">
         <Link
           href="/products/ustrojstva-iqos-iluma"
-          aria-label="Купить IQOS iLuma от 8 500 ₽"
+          aria-label="Забронировать  IQOS iLuma от 8 500 ₽"
         >
           <h3>IQOS iLuma</h3>
           <p>от 8 500 ₽</p>
@@ -26,7 +26,7 @@ export default function Preview() {
         <Link
           href="/products/stiki-terea-dlya-iqos-iluma"
           className="preview-card"
-          aria-label="Купить стики Terea для IQOS Iluma от 3 300 ₽"
+          aria-label="Забронировать  стики Terea для IQOS Iluma от 3 300 ₽"
         >
           <h3>Стики Terea</h3>
           <p>от 3 300 ₽</p>

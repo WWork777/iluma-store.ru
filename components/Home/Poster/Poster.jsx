@@ -30,11 +30,11 @@ export default function Poster() {
         <Link
           href="/products/iqosexclusive"
           className="services-card"
-          aria-label="IQOS Iluma Limited Edition — купить сейчас"
+          aria-label="IQOS Iluma Limited Edition — Забронировать  сейчас"
         >
           <div>
             <p>IQOS Iluma Limited Edition</p>
-            <span>В наличии! Успевайте купить!</span>
+            <span>В наличии! Успевайте Забронировать !</span>
           </div>
           <strong>LIMITED</strong>
         </Link>
@@ -53,7 +53,7 @@ export default function Poster() {
         <Link
           href="/products/stiki-terea-dlya-iqos-iluma"
           className="services-card"
-          aria-label="Стики Terea для IQOS Iluma — купить"
+          aria-label="Стики Terea для IQOS Iluma — Забронировать "
         >
           <div>
             <p>Terea for IQOS ILUMA</p>

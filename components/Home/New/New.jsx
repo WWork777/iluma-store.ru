@@ -96,7 +96,7 @@ const ProductCard = ({ item }) => {
                 className="product-button"
                 onClick={() => addToCart(item, "", quantity, setQuantity)}
               >
-                В корзину
+                Забронировать 
               </button>
             ) : (
               <button
@@ -105,7 +105,7 @@ const ProductCard = ({ item }) => {
                   addToCart(item, activeButton, quantity, setQuantity)
                 }
               >
-                В корзину
+                Забронировать 
               </button>
             )}
           </>

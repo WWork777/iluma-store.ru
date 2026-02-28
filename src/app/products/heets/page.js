@@ -45,7 +45,7 @@ async function fetchItems() {
 }
 
 export async function generateMetadata() {
-  const title = "Купить стики Heets в Iluma-store с доставкой по России";
+  const title = "Забронировать  стики Heets в Iluma-store с доставкой по России";
   return {
     title,
     description:
@@ -54,7 +54,7 @@ export async function generateMetadata() {
       canonical: `https://iluma-store.ru/products/heets`,
     },
     openGraph: {
-      title: `Купить стики Heets в Iluma-store с доставкой по России`,
+      title: `Забронировать  стики Heets в Iluma-store с доставкой по России`,
       description: `Каталог стиков Heets с доставкой по всей России. Лучший выбор вкусов и брендов!`,
       url: `https://iluma-store.ru/products/heets`,
       images: [

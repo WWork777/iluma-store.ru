@@ -4,15 +4,15 @@ import ProductList from "../../../../components/ProductsComponents/ProductsList/
 import Link from "next/link";
 
 export const metadata = {
-  title: "Купить устройства Iqos Iluma от 8000 руб. и стики Terea от 3350 руб.",
+  title: "Забронировать  устройства Iqos Iluma от 8000 руб. и стики Terea от 3350 руб.",
   description:
-    "Здесь вы можете купить устройства IQOS Iluma от 8000 руб. и стики Terea от 3350 руб. Получите доступ к современным технологиям без дыма. Заказывайте с доставкой и наслаждайтесь качеством IQOS уже сегодня!",
+    "Здесь вы можете Забронировать  устройства IQOS Iluma от 8000 руб. и стики Terea от 3350 руб. Получите доступ к современным технологиям без дыма. Заказывайте с доставкой и наслаждайтесь качеством IQOS уже сегодня!",
   keyword:
-    "ILUMA, IQOS, купить IQOS, устройства IQOS, аксессуары IQOS,tereaspace, оригинальные IQOS, интернет-магазин IQOS, доставка IQOS, выгодные цены IQOS, новейшие технологии IQOS, Terea, IQOS ILUMA, купить IQOS ILUMA, устройства IQOS ILUMA, аксессуары IQOS ILUMA, оригинальные IQOS ILUMA, интернет-магазин IQOS ILUMA, доставка IQOS ILUMA, выгодные цены IQOS ILUMA, новейшие технологии IQOS ILUMA, Стики Terea, Купить Terea стики, цены Terea, купить Terea, выгодные цены Terea, лучшие стики Terea, купить ILUMA, устройства ILUMA, аксессуары ILUMA, оригинальные  ILUMA, интернет-магазин ILUMA, доставка ILUMA, выгодные цены ILUMA, новейшие технологии ILUMA",
+    "ILUMA, IQOS, Забронировать  IQOS, устройства IQOS, аксессуары IQOS,tereaspace, оригинальные IQOS, интернет-магазин IQOS, доставка IQOS, выгодные цены IQOS, новейшие технологии IQOS, Terea, IQOS ILUMA, Забронировать  IQOS ILUMA, устройства IQOS ILUMA, аксессуары IQOS ILUMA, оригинальные IQOS ILUMA, интернет-магазин IQOS ILUMA, доставка IQOS ILUMA, выгодные цены IQOS ILUMA, новейшие технологии IQOS ILUMA, Стики Terea, Забронировать  Terea стики, цены Terea, Забронировать  Terea, выгодные цены Terea, лучшие стики Terea, Забронировать  ILUMA, устройства ILUMA, аксессуары ILUMA, оригинальные  ILUMA, интернет-магазин ILUMA, доставка ILUMA, выгодные цены ILUMA, новейшие технологии ILUMA",
   openGraph: {
     title: "TereaSpace || Все товары",
     description:
-      "Здесь вы можете купить устройства IQOS Iluma от 8000 руб. и стики Terea от 3350 руб. Получите доступ к современным технологиям без дыма. Заказывайте с доставкой и наслаждайтесь качеством IQOS уже сегодня!",
+      "Здесь вы можете Забронировать  устройства IQOS Iluma от 8000 руб. и стики Terea от 3350 руб. Получите доступ к современным технологиям без дыма. Заказывайте с доставкой и наслаждайтесь качеством IQOS уже сегодня!",
     url: "https://iluma-store.ru/allproducts",
     images: [
       {

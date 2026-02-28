@@ -6,7 +6,7 @@ import Preview from "../../../components/Home/Preview/Preview";
 import Exclusive from "../../../components/Home/Exclusive/Exclusive";
 
 export const metadata = {
-  title: "Купить IQOS ILUMA и стики Terea с доставкой по России",
+  title: "Забронировать  IQOS ILUMA и стики Terea с доставкой по России",
   description:
     "Каталог устройств IQOS ILUMA и стиков Terea. Только оригинальная продукция. Быстрая доставка. Iluma-store.",
   alternates: {
@@ -14,7 +14,7 @@ export const metadata = {
   },
   openGraph: {
     title:
-      "IQOS Iluma и стики Terea — купить в Москве с доставкой | Iluma Store",
+      "IQOS Iluma и стики Terea — Забронировать  в Москве с доставкой | Iluma Store",
     description:
       "Каталог устройств IQOS ILUMA и стиков Terea. Только оригинальная продукция. Быстрая доставка. Iluma-store.",
     url: "https://iluma-store.ru/products",
@@ -31,7 +31,7 @@ export const metadata = {
   twitter: {
     card: "summary_large_image",
     title:
-      "IQOS Iluma и стики Terea — купить в Москве с доставкой | Iluma Store",
+      "IQOS Iluma и стики Terea — Забронировать  в Москве с доставкой | Iluma Store",
     description:
       "Каталог устройств IQOS ILUMA и стиков Terea. Только оригинальная продукция. Быстрая доставка. Iluma-store.",
     images: ["https://iluma-store.ru/favicon/og-image.png"],

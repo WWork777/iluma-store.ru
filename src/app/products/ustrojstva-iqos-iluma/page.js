@@ -45,7 +45,7 @@ async function fetchItems() {
 }
 
 export async function generateMetadata() {
-  const title = "Устройства IQOS ILUMA - купить в Москве";
+  const title = "Устройства IQOS ILUMA - Забронировать  в Москве";
   const description =
     "Устройства IQOS ILUMA и ILUMA Prime. Оригинал, актуальные цены, доставка по Москве и России.";
 
@@ -65,7 +65,7 @@ export async function generateMetadata() {
           url: `/favicon/og-image.png`,
           width: 512,
           height: 512,
-          alt: "Iluma Store — купить IQOS ILUMA",
+          alt: "Iluma Store — Забронировать  IQOS ILUMA",
         },
       ],
     },
@@ -99,7 +99,7 @@ export default async function Page() {
   return (
     <div className="products-container">
       <h1 className="page-title">
-        Оригинальные устройства IQOS ILUMA — купить в Москве и России
+        Оригинальные устройства IQOS ILUMA — Забронировать  в Москве и России
       </h1>
       <ClientFilters items={items} />
     </div>
