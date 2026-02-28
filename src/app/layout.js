@@ -7,6 +7,7 @@ import Footer from "../../components/Footer/Footer";
 import Cart from "../../components/Cart/cart";
 import CartButton from "../../components/CartButton/CartButton";
 import YandexMetrika from "../../components/YandexMetrika/YandexMEtrika";
+import Noticed from "../../components/noticed/Noticed";
 
 const montserrat = localFont({
   src: "./fonts/Montserrat-VariableFont_wght.ttf",
@@ -38,6 +39,7 @@ export default function RootLayout({ children }) {
         <CartProvider>
           <YandexMetrika />
           <Bootstrap />
+          {/* <Noticed /> */}
           <Header />
           {children}
           <Footer />

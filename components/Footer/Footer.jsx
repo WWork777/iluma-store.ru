@@ -1,6 +1,7 @@
 import "./Footer.scss";
 import Link from "next/link";
 import Image from "next/image";
+import Noticed from "../noticed/Noticed";
 // import img from './f.png'
 
 export default function Footer() {
@@ -85,6 +86,7 @@ export default function Footer() {
             РФ "О ЗАЩИТЕ ПРАВ ПОТРЕБИТЕЛЕЙ" от 07.02.1992 N 2300-1
           </p>
         </div>
+        <Noticed />
       </footer>
     </>
   );
