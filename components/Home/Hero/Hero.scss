@@ -203,6 +203,10 @@
     width: calc(70% - 15px);
     background: linear-gradient(30deg, #5871f3 0%, #5345ba 80%);
     animation: slide1 1s ease;
+
+    @media (max-width: 600px) {
+      width: 100% !important;
+    }
   }
 
   // Третий слайд (специфические стили)
@@ -233,6 +237,9 @@
     width: calc(30% - 15px);
     background-color: #1d1c1c;
     animation: slide1 1.5s ease;
+    @media (max-width: 600px) {
+      width: 100% !important;
+    }
 
     .services-card {
       p {
@@ -504,15 +511,16 @@
 .tg_follov {
   font-size: 30px !important;
   font-weight: bold !important;
+  width: 100% !important;
 
   @media (max-width: 430px) {
-    font-size: 20px !important;
+    font-size: 22px !important;
   }
   @media (max-width: 414px) {
-    font-size: 16px !important;
+    font-size: 20px !important;
   }
   @media (max-width: 400px) {
-    font-size: 14px !important;
+    font-size: 18px !important;
   }
 }
 
@@ -522,7 +530,7 @@
   @media (max-width: 430px) {
     a {
       padding: 8px 16px !important;
-      font-size: 16px !important;
+      font-size: 20px !important;
     }
   }
   @media (max-width: 414px) {
@@ -534,32 +542,33 @@
   @media (max-width: 400px) {
     a {
       padding: 4px 8px !important;
-      font-size: 14px !important;
+      font-size: 18px !important;
     }
   }
 }
 
 .tg_text {
-  font-size: 20px !important;
+  font-size: 18px !important;
+  width: 100% !important;
 
   @media (max-width: 430px) {
-    font-size: 15px !important;
+    font-size: 18px !important;
     font-weight: 600;
   }
   @media (max-width: 414px) {
-    font-size: 14px !important;
+    font-size: 16px !important;
     font-weight: 600;
   }
   @media (max-width: 400px) {
-    font-size: 12px !important;
+    font-size: 14px !important;
     font-weight: 600;
   }
 }
 
-@media (max-width: 420px) {
+@media (max-width: 430px) {
   .tg_ul {
     li {
-      font-size: 18px !important;
+      font-size: 14px !important;
     }
   }
 }
@@ -567,7 +576,7 @@
 @media (max-width: 414px) {
   .tg_ul {
     li {
-      font-size: 14px !important;
+      font-size: 15px !important;
     }
   }
 }
@@ -575,7 +584,7 @@
 @media (max-width: 400px) {
   .tg_ul {
     li {
-      font-size: 12px !important;
+      font-size: 14px !important;
     }
   }
 }

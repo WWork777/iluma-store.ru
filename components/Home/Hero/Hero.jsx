@@ -38,7 +38,7 @@ export default function Hero() {
               spaceBetween: 15,
             },
             640: {
-              slidesPerView: "auto",
+              slidesPerView: 1,
               spaceBetween: 15,
             },
             768: {
@@ -53,7 +53,7 @@ export default function Hero() {
         >
           <SwiperSlide>
             <div className="services-card">
-              <span className="tg_follov">Подпишись на телеграм!</span>
+              <span className="tg_follov">ПОДПИШИСЬ НА ТЕЛЕГРАМ!</span>
               {/* <span>IQOS ILUMA GALAXY</span> */}
               <span className="tg_text">Будь в курсе новинок и акций</span>
               <ul className="tg_ul">
