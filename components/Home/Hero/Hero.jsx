@@ -64,7 +64,7 @@ export default function Hero() {
                 <li>🎯 Только актуальные цены и наличие</li>
               </ul>
               <div className="tg_follov_btn">
-                <Link href={"https://t.me/Ilumastore2025"}>
+                <Link href={"https://t.me/ilumaStore_official_bot"}>
                   Перейти
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
