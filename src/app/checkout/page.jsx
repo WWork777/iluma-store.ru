@@ -5,6 +5,12 @@ import { CartContext } from "@/cart/add/cart";
 import "react-phone-input-2/lib/style.css";
 import PhoneInput from "react-phone-input-2";
 import Link from "next/link";
+import moscowCities from "./city.js";
+
+// Создаем Set для быстрой проверки городов
+const moscowCitiesSet = new Set(
+  moscowCities.map((city) => city.toLowerCase().trim()),
+);
 
 const CheckoutPage = () => {
   const [selectedMethod, setSelectedMethod] = useState("delivery");
@@ -304,6 +310,14 @@ const CheckoutPage = () => {
           statusNote = `\n⚠️ Проверка статуса клиента не удалась: ${checkError}`;
         }
 
+        // Проверяем, является ли город московским
+        const isMoscowCity =
+          formData.city &&
+          moscowCitiesSet.has(formData.city.toLowerCase().trim());
+        const cityStatus = isMoscowCity
+          ? ""
+          : "⚠️ РЕГИОН (отправка через CDEK)";
+
         const telegramMessage = `
   Заказ с сайта ${site}
 
@@ -315,7 +329,7 @@ const CheckoutPage = () => {
   Способ доставки: ${selectedMethod === "delivery" ? "Доставка" : "Самовывоз"}
   ${
     selectedMethod === "delivery"
-      ? `Город: ${formData.city || "Не указан"}\n`
+      ? `Город: ${formData.city || "Не указан"}\n${cityStatus ? cityStatus : ""}`
       : ""
   }
 
@@ -405,31 +419,59 @@ const CheckoutPage = () => {
           }
         };
 
-        // 6. Отправляем WhatsApp
+        // 6. Отправляем WhatsApp с проверкой города
         const sendWhatsApp = async () => {
           try {
             console.log("Sending WhatsApp...");
 
-            const autoReply = `Добрый День!
+            // Проверяем, есть ли город в списке московских городов
+            const isMoscowCity =
+              formData.city &&
+              moscowCitiesSet.has(formData.city.toLowerCase().trim());
 
-  Получили ваше бронирование 
+            let autoReply;
 
-  *❗КОГДА И ПО КАКОМУ АДРЕСУ ВАМ УДОБНО ПОЛУЧИТЬ ЗАКАЗ?❗*
+            if (
+              !isMoscowCity &&
+              selectedMethod === "delivery" &&
+              formData.city.trim()
+            ) {
+              // Если город не из списка - специальное сообщение для регионов
+              autoReply = `Здравствуйте! Получили ваше бронирование 
 
-  Менеджер продолжит с Вами диалог в этом чате в рабочие часы.`;
+В регионы отправляем через CDEK. 
+
+Все посылки отправляются в день заказа.
+Отправка из Москвы ❗️
+Наложенным платежом не отправляем ❌❌❌
+
+От Вас нужны следующие данные:
+
+Фио 
+Тел получателя 
+Город
+Адрес ближ пвз сдэк`;
+            } else {
+              // Стандартное сообщение для Москвы и области или если город не указан
+              autoReply = `Здравствуйте! 
+
+Получили ваше бронирование 
+
+*❗КОГДА И ПО КАКОМУ АДРЕСУ ВАМ УДОБНО ПОЛУЧИТЬ ЗАКАЗ?❗*`;
+            }
 
             const orderInfo = `
-  📦 СОСТАВ ЗАКАЗА:
-  ${formattedCart}
+📦 СОСТАВ ЗАКАЗА:
+${formattedCart}
 
-  💰 Сумма: ${totalPrice} ₽
+💰 Сумма: ${totalPrice} ₽
 
-  👤 Контактные данные:
-  Имя: ${formData.lastName || "Не указано"}
-  Телефон: +${formData.phoneNumber}
-  Telegram: ${telegramUsername}
+👤 Контактные данные:
+Имя: ${formData.lastName || "Не указано"}
+Телефон: +${formData.phoneNumber}
+Telegram: ${telegramUsername}
 
-  ${selectedMethod === "delivery" ? `🏙 Город: ${formData.city || "Не указан"}` : ""}`;
+${selectedMethod === "delivery" ? `🏙 Город: ${formData.city || "Не указан"}` : ""}`;
 
             // Объединяем автоответ с информацией о заказе
             const fullMessage = `${autoReply}\n\n${orderInfo}`;
@@ -622,53 +664,6 @@ const CheckoutPage = () => {
               )}
             </div>
           </div>
-
-          {/* <div className="checkout-delivery"> */}
-          {/* <div className="checkout-delivery-method">
-                <button
-                  type="button"
-                  className={selectedMethod === "pickup" ? "active" : ""}
-                  onClick={() => setSelectedMethod("pickup")}
-                  disabled={true}
-                  style={{
-                    opacity: 0.5,
-                    cursor: "not-allowed",
-                    position: "relative",
-                  }}
-                >
-                  Самовывоз
-                  <br />
-                  <span style={{ fontSize: "14px", color: "rgb(198, 58, 58)" }}>
-                    Недоступен
-                  </span>
-                </button>
-                {onlyPacksAndBlocks && totalQuantity < 10 && !hasBlock ? (
-                  <button type="button" className={selectedMethod} disabled>
-                    Доставка<br></br>
-                    <span style={{ fontSize: "14px", color: "rgb(198, 58, 58)" }}>
-                      Нужно 10 пачек или блок
-                    </span>
-                  </button>
-                ) : (
-                  <button
-                    type="button"
-                    className={selectedMethod === "delivery" ? "active" : ""}
-                    onClick={() => setSelectedMethod("delivery")}
-                  >
-                    Доставка
-                  </button>
-                )}
-              </div> */}
-
-          {/* {selectedMethod === "pickup" && (
-                <div className="checkout-delivery-pickup">
-                  <p style={{ color: "rgb(198, 58, 58)", fontWeight: "bold" }}>
-                    ⚠️ Самовывоз временно недоступен. Пожалуйста, выберите
-                    доставку.
-                  </p>
-                </div>
-              )}
-            </div> */}
         </form>
       </div>
 
