@@ -46,7 +46,7 @@ const BlockModal = ({ allowClose = false, onClose }) => {
             &times;
           </button>
         )}
-        <h2>Добро пожаловать в Iqos Iluma</h2>
+        <h2>Добро пожаловать в ИлюмаСтор</h2>
 
         <p>
           <br />
