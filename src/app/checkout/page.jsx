@@ -530,6 +530,7 @@ ${selectedMethod === "delivery" ? `🏙 Город: ${formData.city || "Не у�
         <form onSubmit={handleSubmit} ref={formRef}>
           <div className="checkout-name">
             <h4>Контактные данные</h4>
+
             <input
               type="text"
               name="lastName"
@@ -696,6 +697,13 @@ ${selectedMethod === "delivery" ? `🏙 Город: ${formData.city || "Не у�
                 </li>
               ))}
             </ul>
+            <p style={{ marginBottom: "0px" }}>
+              Для удобства можно использовать{" "}
+              <Link href={""} style={{ textDecoration: "underline" }}>
+                Telegram бот
+              </Link>{" "}
+              для заказа
+            </p>
             <div className="checkout-total">
               <p>Итого:</p>
               <p>{calculateTotalPrice()} ₽</p>
