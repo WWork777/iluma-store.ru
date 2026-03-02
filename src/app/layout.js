@@ -8,6 +8,7 @@ import Cart from "../../components/Cart/cart";
 import CartButton from "../../components/CartButton/CartButton";
 import YandexMetrika from "../../components/YandexMetrika/YandexMEtrika";
 import Noticed from "../../components/noticed/Noticed";
+import FloatingButton from "../../components/FloatingButton/FloatingButton";
 
 const montserrat = localFont({
   src: "./fonts/Montserrat-VariableFont_wght.ttf",
@@ -45,6 +46,7 @@ export default function RootLayout({ children }) {
           <Footer />
           <Cart />
           <CartButton />
+          <FloatingButton />
         </CartProvider>
       </body>
     </html>
