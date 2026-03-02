@@ -7,7 +7,6 @@ import { Navigation } from "swiper/modules";
 import { CartContext } from "@/cart/add/cart";
 import Link from "next/link";
 import Image from "next/image";
-import eyeIcon from "/public/eye-closed.webp";
 
 import "swiper/css";
 import "swiper/css/navigation";
@@ -52,7 +51,7 @@ const AgeVerificationModal = ({ isOpen, onConfirm, onClose }) => {
   );
 };
 
-const ProductCard = ({ item }) => {
+const ProductCard = ({ item, isAgeVerified, onImageClick }) => {
   const { addToCart } = useContext(CartContext);
   const [activeButton, setActiveButton] = useState(
     item.pricePack === null ? "Блок" : "Пачка",
@@ -61,14 +60,6 @@ const ProductCard = ({ item }) => {
   const [currentImage, setCurrentImage] = useState(
     item.pricePack === null ? item.image : item.imagePack,
   );
-  const [isAgeVerified, setIsAgeVerified] = useState(false);
-  const [showAgeModal, setShowAgeModal] = useState(false);
-
-  useEffect(() => {
-    // Проверяем, подтвержден ли возраст в localStorage
-    const ageVerified = localStorage.getItem("ageVerified") === "true";
-    setIsAgeVerified(ageVerified);
-  }, []);
 
   const handleClick = (button) => {
     setActiveButton(button);
@@ -79,6 +70,145 @@ const ProductCard = ({ item }) => {
     }
   };
 
+  // Проверяем, нужна ли верификация для этого товара
+  const needsVerification = true; // Здесь можно добавить логику для разных товаров
+
+  return (
+    <div className="product-card">
+      <div className="image-container">
+        {needsVerification && !isAgeVerified ? (
+          <div className="blurred-image" onClick={onImageClick}>
+            {item.pricePack === null ? (
+              <img src={item.image} alt={item.name} className="blurred" />
+            ) : item.type === "terea" ? (
+              <img src={currentImage} alt={item.name} className="blurred" />
+            ) : (
+              <img src={item.image} alt={item.name} className="blurred" />
+            )}
+            <div className="eye-overlay">
+              <Image
+                src="/card/eye-closed.webp"
+                alt="Возрастное ограничение 18+"
+                width={50}
+                height={50}
+                priority
+              />
+            </div>
+          </div>
+        ) : (
+          <>
+            {item.pricePack === null ? (
+              <img src={item.image} alt={item.name} width={100} height={100} />
+            ) : item.type === "terea" ? (
+              <img
+                src={currentImage}
+                alt={item.name}
+                width={100}
+                height={100}
+              />
+            ) : (
+              <img src={item.image} alt={item.name} width={100} height={100} />
+            )}
+          </>
+        )}
+      </div>
+
+      {item.nalichie === 1 ? (
+        <Link href={`/products/product-info/${item.type}/${item.ref}`}>
+          <h2 className="product-name">{item.name}</h2>
+        </Link>
+      ) : (
+        <h2 className="product-name">{item.name}</h2>
+      )}
+
+      {item.nalichie === 1 && (
+        <>
+          {item.type === "iqos" ||
+          item.type === "devices" ||
+          item.type === "exclusive" ? (
+            ""
+          ) : (
+            <div className="switch">
+              {item.pricePack !== null && (
+                <button
+                  onClick={() => handleClick("Пачка")}
+                  className={`switch-button ${
+                    activeButton === "Пачка" ? "active" : ""
+                  }`}
+                  disabled={needsVerification && !isAgeVerified}
+                >
+                  Пачка
+                </button>
+              )}
+              <button
+                onClick={() => handleClick("Блок")}
+                className={`switch-button ${
+                  activeButton === "Блок" ? "active" : ""
+                }`}
+                disabled={needsVerification && !isAgeVerified}
+              >
+                Блок
+              </button>
+            </div>
+          )}
+        </>
+      )}
+
+      <div className="product-info">
+        {item.nalichie === 1 ? (
+          <>
+            {item.type === "iqos" ||
+            item.type === "devices" ||
+            item.type === "exclusive" ? (
+              <p className="product-price">{item.price} ₽</p>
+            ) : (
+              <p className="product-price">
+                {activeButton === "Блок" ? item.price : item.pricePack} ₽
+              </p>
+            )}
+            {item.type === "iqos" ||
+            item.type === "devices" ||
+            (item.type === "exclusive" && item.pricePack !== null) ? (
+              <button
+                className="product-button"
+                onClick={() => addToCart(item, "", quantity, setQuantity)}
+                disabled={needsVerification && !isAgeVerified}
+              >
+                Забронировать
+              </button>
+            ) : (
+              <button
+                className="product-button"
+                onClick={() =>
+                  addToCart(item, activeButton, quantity, setQuantity)
+                }
+                disabled={needsVerification && !isAgeVerified}
+              >
+                Забронировать
+              </button>
+            )}
+          </>
+        ) : (
+          <p className="product-price">Нет в наличии</p>
+        )}
+      </div>
+    </div>
+  );
+};
+
+export default function Exclusive() {
+  const [error, setError] = useState(null);
+  const [items, setItems] = useState([]);
+  const [isAgeVerified, setIsAgeVerified] = useState(false);
+  const [showAgeModal, setShowAgeModal] = useState(false);
+  const availableItems = items.filter((item) => item.nalichie === 1);
+
+  useEffect(() => {
+    // Проверяем, подтвержден ли возраст в localStorage при загрузке
+    const ageVerified = localStorage.getItem("ageVerified") === "true";
+    setIsAgeVerified(ageVerified);
+  }, []);
+
   const handleAgeVerification = () => {
     localStorage.setItem("ageVerified", "true");
     setIsAgeVerified(true);
@@ -86,165 +216,9 @@ const ProductCard = ({ item }) => {
   };
 
   const handleImageClick = () => {
-    if (!isAgeVerified && needsVerification) {
+    if (!isAgeVerified) {
       setShowAgeModal(true);
     }
-  };
-
-  // Проверяем, нужна ли верификация для этого товара
-  const needsVerification = true;
-
-  return (
-    <>
-      <div className="product-card">
-        <div className="image-container">
-          {needsVerification && !isAgeVerified ? (
-            <div className="blurred-image" onClick={handleImageClick}>
-              {item.pricePack === null ? (
-                <img src={item.image} alt={item.name} className="blurred" />
-              ) : item.type === "terea" ? (
-                <img src={currentImage} alt={item.name} className="blurred" />
-              ) : (
-                <img src={item.image} alt={item.name} className="blurred" />
-              )}
-              <div className="eye-overlay">
-                <Image
-                  src="/card/eye-closed.webp"
-                  alt="Возрастное ограничение 18+"
-                  width={50}
-                  height={50}
-                  priority
-                />
-                {/* <span>Нажмите для подтверждения возраста</span> */}
-              </div>
-            </div>
-          ) : (
-            <>
-              {item.pricePack === null ? (
-                <img
-                  src={item.image}
-                  alt={item.name}
-                  width={100}
-                  height={100}
-                />
-              ) : item.type === "terea" ? (
-                <img
-                  src={currentImage}
-                  alt={item.name}
-                  width={100}
-                  height={100}
-                />
-              ) : (
-                <img
-                  src={item.image}
-                  alt={item.name}
-                  width={100}
-                  height={100}
-                />
-              )}
-            </>
-          )}
-        </div>
-
-        {item.nalichie === 1 ? (
-          <Link href={`/products/product-info/${item.type}/${item.ref}`}>
-            <h2 className="product-name">{item.name}</h2>
-          </Link>
-        ) : (
-          <h2 className="product-name">{item.name}</h2>
-        )}
-
-        {item.nalichie === 1 && (
-          <>
-            {item.type === "iqos" ||
-            item.type === "devices" ||
-            item.type === "exclusive" ? (
-              ""
-            ) : (
-              <div className="switch">
-                {item.pricePack !== null && (
-                  <button
-                    onClick={() => handleClick("Пачка")}
-                    className={`switch-button ${
-                      activeButton === "Пачка" ? "active" : ""
-                    }`}
-                    disabled={needsVerification && !isAgeVerified}
-                  >
-                    Пачка
-                  </button>
-                )}
-                <button
-                  onClick={() => handleClick("Блок")}
-                  className={`switch-button ${
-                    activeButton === "Блок" ? "active" : ""
-                  }`}
-                  disabled={needsVerification && !isAgeVerified}
-                >
-                  Блок
-                </button>
-              </div>
-            )}
-          </>
-        )}
-
-        <div className="product-info">
-          {item.nalichie === 1 ? (
-            <>
-              {item.type === "iqos" ||
-              item.type === "devices" ||
-              item.type === "exclusive" ? (
-                <p className="product-price">{item.price} ₽</p>
-              ) : (
-                <p className="product-price">
-                  {activeButton === "Блок" ? item.price : item.pricePack} ₽
-                </p>
-              )}
-              {item.type === "iqos" ||
-              item.type === "devices" ||
-              (item.type === "exclusive" && item.pricePack !== null) ? (
-                <button
-                  className="product-button"
-                  onClick={() => addToCart(item, "", quantity, setQuantity)}
-                  disabled={needsVerification && !isAgeVerified}
-                >
-                  Забронировать
-                </button>
-              ) : (
-                <button
-                  className="product-button"
-                  onClick={() =>
-                    addToCart(item, activeButton, quantity, setQuantity)
-                  }
-                  disabled={needsVerification && !isAgeVerified}
-                >
-                  Забронировать
-                </button>
-              )}
-            </>
-          ) : (
-            <p className="product-price">Нет в наличии</p>
-          )}
-        </div>
-      </div>
-
-      <AgeVerificationModal
-        isOpen={showAgeModal}
-        onConfirm={handleAgeVerification}
-        onClose={() => setShowAgeModal(false)}
-      />
-    </>
-  );
-};
-
-export default function Exclusive() {
-  const { addToCart } = useContext(CartContext);
-  const [error, setError] = useState(null);
-  const [items, setItems] = useState([]);
-  const [activeButton, setActiveButton] = useState("Блок");
-  const availableItems = items.filter((item) => item.nalichie === 1);
-
-  const handleClick = (button) => {
-    setActiveButton(button);
   };
 
   const fetchExclusive = async () => {
@@ -272,26 +246,38 @@ export default function Exclusive() {
   }, []);
 
   return (
-    <div id="popular" className="new exclusive">
-      <h2>Хит продаж</h2>
-      <Swiper
-        slidesPerView={"auto"}
-        spaceBetween={30}
-        navigation={{
-          nextEl: ".swiper-button-next-new",
-          prevEl: ".swiper-button-prev-new",
-        }}
-        modules={[Navigation]}
-        className="promo-catalog"
-      >
-        {availableItems.map((item) => (
-          <SwiperSlide key={item.id}>
-            <ProductCard item={item} />
-          </SwiperSlide>
-        ))}
-        <button className="swiper-button-prev-new"></button>
-        <button className="swiper-button-next-new"></button>
-      </Swiper>
-    </div>
+    <>
+      <div id="popular" className="new exclusive">
+        <h2>Хит продаж</h2>
+        <Swiper
+          slidesPerView={"auto"}
+          spaceBetween={30}
+          navigation={{
+            nextEl: ".swiper-button-next-new",
+            prevEl: ".swiper-button-prev-new",
+          }}
+          modules={[Navigation]}
+          className="promo-catalog"
+        >
+          {availableItems.map((item) => (
+            <SwiperSlide key={item.id}>
+              <ProductCard
+                item={item}
+                isAgeVerified={isAgeVerified}
+                onImageClick={handleImageClick}
+              />
+            </SwiperSlide>
+          ))}
+          <button className="swiper-button-prev-new"></button>
+          <button className="swiper-button-next-new"></button>
+        </Swiper>
+      </div>
+
+      <AgeVerificationModal
+        isOpen={showAgeModal}
+        onConfirm={handleAgeVerification}
+        onClose={() => setShowAgeModal(false)}
+      />
+    </>
   );
 }
