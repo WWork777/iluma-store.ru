@@ -126,7 +126,7 @@ export default function ClientFilters({ items: initialItems }) {
       <div className="product-details">
         <div className="product-details__main">
           <div className="product-details__image">
-            <div className="image-container">
+            <div className="image-container-info">
               {needsVerification && !isAgeVerified ? (
                 <div className="blurred-image" onClick={handleImageClick}>
                   {product.pricePack === null ? (
