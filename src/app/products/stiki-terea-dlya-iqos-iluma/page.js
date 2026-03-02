@@ -5,7 +5,7 @@ import ClientFilters from "./client";
 export const metadataBase = new URL(
   process.env.NODE_ENV === "production"
     ? "https://iluma-store.ru"
-    : "http://localhost:3000"
+    : "http://localhost:3000",
 );
 
 async function safeFetch(url, options = {}) {
@@ -31,12 +31,13 @@ async function fetchItems() {
   try {
     // Для серверного рендеринга используем абсолютный URL
     let apiUrl;
-    
+
     if (typeof window === "undefined") {
       // На сервере используем абсолютный URL
-      const baseUrl = process.env.NODE_ENV === "production"
-        ? "https://iluma-store.ru"
-        : "http://localhost:3000";
+      const baseUrl =
+        process.env.NODE_ENV === "production"
+          ? "https://iluma-store.ru"
+          : "http://localhost:3000";
       apiUrl = `${baseUrl}/api/products/getterea`;
     } else {
       // На клиенте используем относительный URL
@@ -111,7 +112,7 @@ export default async function Page() {
   return (
     <div className="products-container">
       <h1 className="page-title">
-        Забронировать  стики Terea для IQOS ILUMA в Москве и России
+        Забронировать стики Terea для IQOS ILUMA в Москве и России
       </h1>
       <ClientFilters items={items} />
     </div>
