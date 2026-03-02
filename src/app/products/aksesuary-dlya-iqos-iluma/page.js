@@ -99,7 +99,7 @@ export default async function Page() {
   return (
     <div className="products-container">
       <h1 className="page-title">
-        Аксессуары для IQOS ILUMA в Москве и России
+        Аксессуары для IQOS ILUMA купить в Москве и России
       </h1>
       <ClientFilters items={items} />
     </div>

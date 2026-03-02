@@ -112,7 +112,7 @@ export default async function Page() {
   return (
     <div className="products-container">
       <h1 className="page-title">
-        Забронировать стики Terea для IQOS ILUMA в Москве и России
+        Купить стики Terea для IQOS ILUMA в Москве и России
       </h1>
       <ClientFilters items={items} />
     </div>
