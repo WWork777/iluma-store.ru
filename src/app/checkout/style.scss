@@ -19,14 +19,15 @@
   flex-direction: row;
   justify-content: space-between;
   gap: 50px;
+  h5 {
+      color: red !important;
+    }
   .plitka {
     h1 {
       margin-bottom: 20px;
       color: $font !important;
     }
-    h5 {
-      color: red !important;
-    }
+    
 
     padding: 30px;
     background-color: #ffffff;
