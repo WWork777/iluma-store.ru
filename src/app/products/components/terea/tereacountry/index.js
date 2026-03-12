@@ -52,7 +52,7 @@ const TereaCountry = ({
 
   const Countries = [
     { id: "kaz", title: "Казахстан" },
-    { id: "pol", title: "Польша" },
+    // { id: "pol", title: "Польша" },
     { id: "uzb", title: "Узбекистан" },
     { id: "arm", title: "Армения" },
     { id: "ind", title: "Индонезия" },
