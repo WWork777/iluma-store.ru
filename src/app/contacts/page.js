@@ -38,9 +38,9 @@ const Contacts = () => {
         <p>
           г.Москва - ул. Римского-Корсакова, 11, корп 8 (Ориентир: Пункт OZON)
         </p> */}
-        <p>
-          Телефон: <Link href="tel:+7 (995) 153-80-19">+7 (995) 153-80-19</Link>
-        </p>
+        {/* <p>
+          Телефон: <Link href="tel:"></Link>
+        </p> */}
         <p>График работы:</p>
         <p>Пн-пт: с 12:00-20:00</p>
         <p>Сб-вс: с 12.00-20.00</p>
@@ -50,12 +50,12 @@ const Contacts = () => {
         <p>
           Telegram: <Link href="https://t.me/Ilumastore2025">@IlumaStore</Link>
         </p>
-        <p>
+        {/* <p>
           Whatsapp:{" "}
           <Link href="https://api.whatsapp.com/send/?phone=79951538019&text=Здравствуйте%21+Хочу+оформить+заказ&type=phone_number&app_absent=0">
             +79951538019
           </Link>
-        </p>
+        </p> */}
       </div>
       {/* <Map /> */}
     </div>
