@@ -7,8 +7,8 @@ services:
     restart: always
     environment:
       - NODE_ENV=production
-      - VIRTUAL_HOST=iluma-store.ru,www.iluma-store.ru
-      - LETSENCRYPT_HOST=iluma-store.ru,www.iluma-store.ru
+      - VIRTUAL_HOST=iluma-store.ru,www.iluma-store.ru,cdn.iluma-store.ru
+      - LETSENCRYPT_HOST=iluma-store.ru,www.iluma-store.ru,cdn.iluma-store.ru
       - LETSENCRYPT_EMAIL=parsh@gmail.com
       - REDIRECT_www.iluma-store.ru=iluma-store.ru
     networks:
