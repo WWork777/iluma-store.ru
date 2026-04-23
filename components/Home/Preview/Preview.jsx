@@ -7,7 +7,7 @@ export default function Preview() {
     <>
       <div className="preview">
         <div className="preview-card preview-column-one">
-          <Link href="/products/iqos" className="">
+          <Link href="/products/ustrojstva-iqos-iluma" className="">
             <h3>iLuma</h3>
             <p>от 8 500 ₽</p>
             <Image
@@ -19,7 +19,10 @@ export default function Preview() {
           </Link>
         </div>
         <div className="preview-column-two">
-          <Link href="/products/terea" className="preview-card">
+          <Link
+            href="/products/stiki-terea-dlya-iqos-iluma"
+            className="preview-card"
+          >
             <h3>Стики Terea</h3>
             <p>от 3 500 ₽</p>
             <Image
@@ -44,7 +47,10 @@ export default function Preview() {
                         <p>от 6 000 ₽</p>
                         <Image src={'/Home/Preview/heets.png'} alt='IQOS iLuma' width={500} height={700} />
                     </Link> */}
-          <Link href="/products/devices" className="preview-card">
+          <Link
+            href="/products/aksesuary-dlya-iqos-iluma"
+            className="preview-card"
+          >
             <h3>Аксессуары</h3>
             <p>от 1490 ₽</p>
             <Image
@@ -78,7 +84,10 @@ export default function Preview() {
               height={700}
             />
           </Link> */}
-          <Link href="/products/devices" className="preview-card">
+          <Link
+            href="/products/aksesuary-dlya-iqos-iluma"
+            className="preview-card"
+          >
             <h3>Аксессуары</h3>
             <p>от 1490 ₽</p>
             <Image
